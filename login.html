@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PhysioLearn — Welcome</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --cream:#FDF8F2;--warm:#FFFBF5;--peach:#FFE8D6;
+  --coral:#FF7B54;--coral-l:#FF9B76;--coral-d:#E5623B;
+  --teal:#2D9B8A;--teal-l:#E0F5F1;
+  --purple:#7B5EA7;--purple-l:#EDE8F7;
+  --gold:#F2A93B;--gold-l:#FFF3D6;
+  --green:#52B788;--green-l:#E8F7EF;
+  --text:#2C2318;--mid:#6B5B4E;--light:#A89888;
+  --border:#F0E8DF;
+  --sh:0 4px 24px rgba(44,35,24,.08);
+  --sh2:0 12px 40px rgba(44,35,24,.15);
+  --r:20px;--rs:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Nunito',sans-serif;
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  background:var(--cream);
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+/* ── LEFT PANEL ── */
+.left{
+  background:linear-gradient(160deg,#1A3C40 0%,#2D6A5E 45%,#3A8C7E 100%);
+  display:flex;flex-direction:column;
+  justify-content:space-between;
+  padding:40px;
+  position:relative;overflow:hidden;
+  min-height:100vh;
+}
+.left::before{content:'';position:absolute;right:-80px;top:-80px;width:350px;height:350px;border-radius:50%;background:rgba(255,255,255,.04);}
+.left::after{content:'';position:absolute;left:-60px;bottom:-60px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.03);}
+.left-logo{display:flex;align-items:center;gap:10px;z-index:1;}
+.left-logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--coral),var(--coral-l));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 14px rgba(255,123,84,.35);}
+.left-logo-text{font-size:18px;font-weight:900;color:white;}
+.left-logo-text span{color:var(--coral-l);}
+.left-content{z-index:1;}
+.left-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:6px 14px;font-size:11px;font-weight:800;color:rgba(255,255,255,.8);letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px;}
+.left-title{font-family:'Playfair Display',serif;font-size:clamp(28px,3.5vw,42px);color:white;font-weight:700;line-height:1.2;margin-bottom:14px;}
+.left-title em{color:var(--coral-l);font-style:italic;}
+.left-desc{font-size:14px;color:rgba(255,255,255,.7);font-weight:600;line-height:1.7;margin-bottom:32px;max-width:380px;}
+.persona-showcase{display:flex;flex-direction:column;gap:10px;}
+.ps-item{display:flex;align-items:center;gap:12px;padding:14px 18px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--rs);backdrop-filter:blur(4px);transition:all .25s;cursor:default;}
+.ps-item:hover{background:rgba(255,255,255,.18);}
+.ps-icon{font-size:22px;}
+.ps-info{}
+.ps-name{font-size:13px;font-weight:800;color:white;}
+.ps-desc{font-size:11px;color:rgba(255,255,255,.6);font-weight:600;}
+.left-bottom{font-size:11px;color:rgba(255,255,255,.35);font-weight:600;z-index:1;}
+
+/* ── RIGHT PANEL ── */
+.right{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 48px;
+  background:var(--warm);
+  min-height:100vh;
+  overflow-y:auto;
+}
+.right-inner{width:100%;max-width:400px;}
+
+/* TABS */
+.auth-tabs{display:flex;gap:4px;background:var(--cream);border-radius:var(--rs);padding:4px;margin-bottom:28px;border:1.5px solid var(--border);}
+.auth-tab{flex:1;padding:10px;text-align:center;border-radius:9px;font-size:14px;font-weight:800;color:var(--light);cursor:pointer;transition:all .2s;}
+.auth-tab.active{background:white;color:var(--text);box-shadow:var(--sh);}
+
+/* WELCOME */
+.welcome-text{margin-bottom:24px;}
+.welcome-text h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.welcome-text p{font-size:13px;color:var(--light);font-weight:600;}
+
+/* PERSONA SELECTOR */
+.persona-label{font-size:12px;font-weight:800;color:var(--mid);margin-bottom:10px;display:block;}
+.persona-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+.persona-opt{
+  padding:14px 12px;border-radius:var(--rs);
+  border:2px solid var(--border);
+  cursor:pointer;transition:all .2s;
+  text-align:center;background:white;
+}
+.persona-opt:hover{border-color:var(--coral);transform:translateY(-1px);}
+.persona-opt.selected{border-color:var(--coral);background:var(--peach);}
+.persona-opt .po-icon{font-size:24px;margin-bottom:5px;}
+.persona-opt .po-name{font-size:12px;font-weight:800;color:var(--text);}
+.persona-opt .po-desc{font-size:10px;font-weight:600;color:var(--light);margin-top:2px;}
+
+/* FORM */
+.form-group{margin-bottom:16px;}
+.form-label{font-size:12px;font-weight:800;color:var(--mid);display:block;margin-bottom:6px;}
+.form-input{
+  width:100%;padding:13px 16px;
+  border-radius:var(--rs);border:1.5px solid var(--border);
+  background:white;font-family:'Nunito',sans-serif;
+  font-size:13px;font-weight:600;color:var(--text);
+  outline:none;transition:border-color .2s;
+}
+.form-input:focus{border-color:var(--coral);}
+.form-input::placeholder{color:var(--light);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* PASSWORD TOGGLE */
+.input-wrap{position:relative;}
+.input-wrap .form-input{padding-right:44px;}
+.eye-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--light);}
+
+/* FORGOT */
+.forgot{text-align:right;margin-top:-8px;margin-bottom:16px;}
+.forgot a{font-size:12px;font-weight:700;color:var(--coral);text-decoration:none;}
+
+/* SUBMIT BTN */
+.submit-btn{
+  width:100%;padding:15px;border-radius:50px;
+  background:linear-gradient(135deg,var(--coral),var(--coral-l));
+  color:white;font-family:'Nunito',sans-serif;
+  font-size:15px;font-weight:800;border:none;
+  cursor:pointer;transition:all .25s;
+  box-shadow:0 6px 20px rgba(255,123,84,.3);
+  margin-bottom:16px;
+}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,123,84,.4);}
+.submit-btn:active{transform:translateY(0);}
+.submit-btn.loading{opacity:.7;cursor:not-allowed;}
+
+/* DIVIDER */
+.divider{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.divider::before,.divider::after{content:'';flex:1;height:1.5px;background:var(--border);}
+.divider span{font-size:11px;font-weight:700;color:var(--light);}
+
+/* SOCIAL */
+.social-btn{
+  width:100%;padding:13px;border-radius:50px;
+  background:white;border:1.5px solid var(--border);
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;
+  color:var(--mid);cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-bottom:10px;
+}
+.social-btn:hover{border-color:var(--coral);color:var(--coral);}
+
+/* SWITCH */
+.switch-text{text-align:center;font-size:13px;font-weight:600;color:var(--light);}
+.switch-text a{color:var(--coral);font-weight:800;text-decoration:none;}
+
+/* SUCCESS STATE */
+.success-state{
+  display:none;flex-direction:column;align-items:center;
+  text-align:center;padding:20px 0;
+}
+.success-state.visible{display:flex;}
+.success-orb{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--green),#6FD4A0);display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:20px;box-shadow:0 8px 24px rgba(82,183,136,.3);animation:popIn .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+.success-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.success-sub{font-size:13px;color:var(--light);font-weight:600;margin-bottom:24px;line-height:1.6;}
+.success-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:50px;background:linear-gradient(135deg,var(--coral),var(--coral-l));color:white;font-size:14px;font-weight:800;text-decoration:none;box-shadow:0 6px 20px rgba(255,123,84,.3);transition:all .25s;}
+.success-btn:hover{transform:translateY(-2px);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--text);color:white;padding:11px 20px;border-radius:var(--rs);font-size:13px;font-weight:700;box-shadow:var(--sh2);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:999;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* MOBILE */
+@media(max-width:768px){
+  body{grid-template-columns:1fr;grid-template-rows:auto 1fr;}
+  .left{min-height:auto;padding:28px 24px 32px;}
+  .persona-showcase{display:none;}
+  .left-content{margin-bottom:0;}
+  .left-title{font-size:26px;}
+  .left-desc{display:none;}
+  .right{padding:28px 24px;min-height:auto;}
+  .form-row{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .persona-grid{grid-template-columns:1fr 1fr;}
+}
+
+/* ANIMATIONS */
+.form-panel{animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- LEFT -->
+<div class="left">
+  <div class="left-logo">
+    <div class="left-logo-icon">🦴</div>
+    <div class="left-logo-text">Physio<span>Learn</span></div>
+  </div>
+  <div class="left-content">
+    <div class="left-tag">✨ AI-Powered Platform</div>
+    <div class="left-title">Your Physio<br/><em>Journey</em> Starts Here</div>
+    <div class="left-desc">One platform for patients recovering, students learning, therapists treating, and teachers inspiring.</div>
+    <div class="persona-showcase">
+      <div class="ps-item"><div class="ps-icon">👤</div><div class="ps-info"><div class="ps-name">Patients</div><div class="ps-desc">Gamified sessions · AI-guided recovery</div></div></div>
+      <div class="ps-item"><div class="ps-icon">🎓</div><div class="ps-info"><div class="ps-name">Students</div><div class="ps-desc">AI textbook · Clinical correlations</div></div></div>
+      <div class="ps-item"><div class="ps-icon">🩺</div><div class="ps-info"><div class="ps-name">Therapists</div><div class="ps-desc">Special test recommender · Differentials</div></div></div>
+      <div class="ps-item"><div class="ps-icon">👩‍🏫</div><div class="ps-info"><div class="ps-name">Teachers</div><div class="ps-desc">Case studies · Lecture enhancement</div></div></div>
+    </div>
+  </div>
+  <div class="left-bottom">© 2026 PhysioLearn · Free to use</div>
+</div>
+
+<!-- RIGHT -->
+<div class="right">
+  <div class="right-inner">
+
+    <!-- TABS -->
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign In</div>
+      <div class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Create Account</div>
+    </div>
+
+    <!-- LOGIN PANEL -->
+    <div id="panel-login" class="form-panel">
+      <div class="welcome-text">
+        <h2>Welcome back 👋</h2>
+        <p>Sign in to continue your learning journey</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" type="email" placeholder="sara@example.com" id="login-email"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrap">
+          <input class="form-input" type="password" placeholder="Enter your password" id="login-password"/>
+          <button class="eye-btn" onclick="togglePassword('login-password',this)">👁</button>
+        </div>
+      </div>
+      <div class="forgot"><a href="#">Forgot password?</a></div>
+
+      <button class="submit-btn" onclick="handleLogin()">Sign In →</button>
+
+      <div class="divider"><span>or continue with</span></div>
+      <button class="social-btn" onclick="showToast('🔜 Google sign-in coming soon!')">🌐 Continue with Google</button>
+
+      <div class="switch-text">Don't have an account? <a onclick="switchTab('signup')" style="cursor:pointer">Sign up free</a></div>
+    </div>
+
+    <!-- SIGNUP PANEL -->
+    <div id="panel-signup" class="form-panel" style="display:none">
+      <div class="welcome-text">
+        <h2>Join PhysioLearn 🎉</h2>
+        <p>Create your free account in 30 seconds</p>
+      </div>
+
+      <!-- PERSONA SELECT -->
+      <label class="persona-label">I am a...</label>
+      <div class="persona-grid" id="personaGrid">
+        <div class="persona-opt" onclick="selectPersona(this,'patient')">
+          <div class="po-icon">👤</div>
+          <div class="po-name">Patient</div>
+          <div class="po-desc">Recovery & exercises</div>
+        </div>
+        <div class="persona-opt selected" onclick="selectPersona(this,'student')">
+          <div class="po-icon">🎓</div>
+          <div class="po-name">Student</div>
+          <div class="po-desc">Study & learn</div>
+        </div>
+        <div class="persona-opt" onclick="selectPersona(this,'therapist')">
+          <div class="po-icon">🩺</div>
+          <div class="po-name">Therapist</div>
+          <div class="po-desc">Clinical support</div>
+        </div>
+        <div class="persona-opt" onclick="selectPersona(this,'teacher')">
+          <div class="po-icon">👩‍🏫</div>
+          <div class="po-name">Teacher</div>
+          <div class="po-desc">Teaching tools</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-input" type="text" placeholder="Sara" id="signup-fname"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-input" type="text" placeholder="Ahmed" id="signup-lname"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" type="email" placeholder="sara@example.com" id="signup-email"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrap">
+          <input class="form-input" type="password" placeholder="Create a strong password" id="signup-password"/>
+          <button class="eye-btn" onclick="togglePassword('signup-password',this)">👁</button>
+        </div>
+      </div>
+
+      <!-- DYNAMIC FIELD -->
+      <div class="form-group" id="dynamic-field">
+        <label class="form-label" id="dynamic-label">University / Institution</label>
+        <input class="form-input" type="text" placeholder="e.g. AIIMS, KMC, University of Mumbai" id="dynamic-input"/>
+      </div>
+
+      <button class="submit-btn" onclick="handleSignup()" id="signup-btn">Create Account →</button>
+
+      <div class="switch-text">Already have an account? <a onclick="switchTab('login')" style="cursor:pointer">Sign in</a></div>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div class="success-state" id="success-state">
+      <div class="success-orb">✅</div>
+      <div class="success-title" id="success-title">Welcome aboard!</div>
+      <div class="success-sub" id="success-sub">Your account is ready. Let's get started.</div>
+      <a class="success-btn" id="success-btn" href="condition_library.html">Go to App →</a>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let selectedPersona = 'student';
+let toastTimer;
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function switchTab(tab){
+  document.getElementById('tab-login').classList.toggle('active',tab==='login');
+  document.getElementById('tab-signup').classList.toggle('active',tab==='signup');
+  document.getElementById('panel-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('panel-signup').style.display=tab==='signup'?'block':'none';
+  document.getElementById('success-state').classList.remove('visible');
+}
+
+function selectPersona(el, persona){
+  selectedPersona=persona;
+  document.querySelectorAll('.persona-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+
+  const labels={
+    patient:'Chief Complaint / Condition',
+    student:'University / Institution',
+    therapist:'Clinic / Hospital Name',
+    teacher:'College / Institution'
+  };
+  const placeholders={
+    patient:'e.g. Lower back pain, Knee injury',
+    student:'e.g. AIIMS, KMC, University of Mumbai',
+    therapist:'e.g. Apollo Hospital, Private Practice',
+    teacher:'e.g. MGM College of Physiotherapy'
+  };
+  document.getElementById('dynamic-label').textContent=labels[persona];
+  document.getElementById('dynamic-input').placeholder=placeholders[persona];
+}
+
+function togglePassword(id, btn){
+  const inp=document.getElementById(id);
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁';}
+}
+
+function handleLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-password').value;
+  if(!email){showToast('⚠️ Please enter your email');return;}
+  if(!pass){showToast('⚠️ Please enter your password');return;}
+
+  const btn=document.querySelector('#panel-login .submit-btn');
+  btn.textContent='Signing in...';btn.classList.add('loading');
+
+  setTimeout(()=>{
+    btn.textContent='Sign In →';btn.classList.remove('loading');
+    // Show success
+    document.getElementById('panel-login').style.display='none';
+    document.getElementById('success-title').textContent='Welcome back! 👋';
+    document.getElementById('success-sub').textContent='Great to see you again. Your progress is waiting.';
+    document.getElementById('success-btn').textContent='Continue →';
+    document.getElementById('success-btn').href='condition_library.html';
+    document.getElementById('success-state').classList.add('visible');
+  },1200);
+}
+
+function handleSignup(){
+  const fname=document.getElementById('signup-fname').value.trim();
+  const email=document.getElementById('signup-email').value.trim();
+  const pass=document.getElementById('signup-password').value;
+
+  if(!fname){showToast('⚠️ Please enter your first name');return;}
+  if(!email){showToast('⚠️ Please enter your email');return;}
+  if(!pass||pass.length<6){showToast('⚠️ Password must be at least 6 characters');return;}
+
+  const btn=document.getElementById('signup-btn');
+  btn.textContent='Creating account...';btn.classList.add('loading');
+
+  setTimeout(()=>{
+    btn.textContent='Create Account →';btn.classList.remove('loading');
+    document.getElementById('panel-signup').style.display='none';
+
+    const destinations={
+      patient:'patient_onboarding.html',
+      student:'condition_library.html',
+      therapist:'condition_library.html',
+      teacher:'condition_library.html'
+    };
+    const messages={
+      patient:"Your recovery journey starts now! Let's set up your profile.",
+      student:"Welcome to your AI-powered study companion!",
+      therapist:"Your clinical assistant is ready.",
+      teacher:"Your teaching toolkit is ready."
+    };
+
+    document.getElementById('success-title').textContent=`Welcome, ${fname}! 🎉`;
+    document.getElementById('success-sub').textContent=messages[selectedPersona];
+    document.getElementById('success-btn').textContent=selectedPersona==='patient'?'Set Up My Profile →':'Go to App →';
+    document.getElementById('success-btn').href=destinations[selectedPersona];
+    document.getElementById('success-state').classList.add('visible');
+  },1400);
+}
+</script>
+</body>
+</html>
