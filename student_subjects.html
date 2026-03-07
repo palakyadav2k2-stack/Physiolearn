@@ -352,7 +352,8 @@ body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);m
     <div class="d-chips" id="dTopics"></div>
     <div class="d-sec">Details</div>
     <div class="d-meta" id="dMeta"></div>
-    <div class="d-btns">
+    <div style="margin-bottom:12px;"><a href="physio_library.html" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:12px;background:linear-gradient(135deg,#EDE8F7,#E8F0FD);border:1.5px solid rgba(123,94,167,.25);text-decoration:none;font-family:Nunito,sans-serif;font-size:12px;font-weight:800;color:#7B5EA7;">📚 Open Full Library for this Subject ↗</a></div>
+      <div class="d-btns">
       <button class="d-enroll" id="dEnrollBtn" onclick="toggleEnroll()"></button>
       <button class="d-close" onclick="closeDrawer()">Close</button>
     </div>
@@ -762,7 +763,7 @@ function openDrawer(id) {
   document.getElementById('dIcon').textContent    = s.icon;
   document.getElementById('dName').textContent    = s.name;
   document.getElementById('dDesc').textContent    = s.desc;
-  document.getElementById('dTopics').innerHTML    = s.topics.map(t=>`<div class="d-chip">${t}</div>`).join('');
+  document.getElementById('dTopics').innerHTML    = s.topics.map(t=>`<div class="d-chip" onclick="openTopic('${s.id}','${t.replace(/'/g,"'")}')" style="cursor:pointer">${t} ↗</div>`).join('');
   document.getElementById('dMeta').innerHTML      = `<div class="d-tag">${s.badge}</div><div class="d-tag">${s.topicCount} Topics</div><div class="d-tag">${s.groupLabel.replace(/^[^\s]+ /,'')}</div>`;
   refreshDrawerBtn();
   document.getElementById('drawer').classList.add('open');
@@ -838,6 +839,12 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function openTopic(subId, topic) {
+  sessionStorage.setItem('physiolearn_library_subject', subId);
+  sessionStorage.setItem('physiolearn_library_topic', topic);
+  window.location.href = 'physio_library.html?subject=' + encodeURIComponent(subId) + '&topic=' + encodeURIComponent(topic);
 }
 
 init();

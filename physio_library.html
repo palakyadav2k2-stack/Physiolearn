@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PhysioLearn — Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --cream:#FDF8F2; --warm:#FFFBF5; --peach:#FFE8D6;
+  --coral:#FF7B54; --coral-l:#FF9B76;
+  --teal:#2D9B8A;  --teal-l:#E0F5F1;
+  --purple:#7B5EA7;--purple-l:#EDE8F7;
+  --gold:#F2A93B;  --gold-l:#FFF3D6;
+  --green:#52B788; --green-l:#E8F7EF;
+  --blue:#3A7BD5;  --blue-l:#E8F0FD;
+  --text:#2C2318;  --mid:#6B5B4E; --light:#A89888;
+  --border:#F0E8DF;
+  --shadow:0 4px 20px rgba(44,35,24,.07);
+  --shadow-lg:0 8px 32px rgba(44,35,24,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+
+/* ── TOP BAR ── */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(253,248,242,.97);backdrop-filter:blur(14px);
+  border-bottom:1.5px solid var(--border);
+  padding:0 16px;height:56px;
+  display:flex;align-items:center;gap:10px;
+}
+.tb-back{width:32px;height:32px;border-radius:9px;background:rgba(44,35,24,.06);border:none;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.tb-logo{display:flex;align-items:center;gap:7px;}
+.tb-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--coral),var(--coral-l));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.tb-name{font-size:14px;font-weight:900;color:var(--text);}
+.tb-name span{color:var(--coral);}
+.tb-pill{
+  background:linear-gradient(135deg,var(--purple-l),var(--blue-l));
+  border:1.5px solid rgba(123,94,167,.2);
+  border-radius:50px;padding:5px 12px;
+  font-size:11px;font-weight:800;color:var(--purple);
+}
+.tb-search{
+  flex:1;display:flex;align-items:center;gap:7px;
+  background:rgba(44,35,24,.05);border:1.5px solid transparent;
+  border-radius:50px;padding:7px 14px;
+  transition:all .2s;
+}
+.tb-search:focus-within{background:white;border-color:var(--coral);box-shadow:var(--shadow);}
+.tb-search input{flex:1;border:none;outline:none;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;color:var(--text);background:transparent;}
+.tb-search input::placeholder{color:var(--light);}
+
+/* ── LAYOUT ── */
+.layout{display:flex;min-height:calc(100vh - 56px);}
+
+/* LEFT SIDEBAR — subject & topic list */
+.sidebar{
+  width:280px;flex-shrink:0;
+  border-right:1.5px solid var(--border);
+  background:var(--warm);
+  overflow-y:auto;
+  height:calc(100vh - 56px);
+  position:sticky;top:56px;
+}
+@media(max-width:680px){
+  .sidebar{display:none;}
+  .sidebar.mobile-open{display:block;position:fixed;top:56px;left:0;bottom:0;z-index:40;width:82vw;max-width:300px;box-shadow:4px 0 20px rgba(0,0,0,.15);}
+}
+
+.sb-subject{margin-bottom:2px;}
+.sb-subject-hd{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 14px;cursor:pointer;
+  font-size:12px;font-weight:800;color:var(--mid);
+  border-radius:10px;margin:2px 8px;
+  transition:all .18s;
+  user-select:none;
+}
+.sb-subject-hd:hover{background:var(--peach);color:var(--coral);}
+.sb-subject-hd.open{color:var(--coral);}
+.sb-subject-hd .sb-icon{font-size:15px;flex-shrink:0;}
+.sb-subject-hd .sb-chevron{margin-left:auto;font-size:10px;transition:transform .2s;}
+.sb-subject-hd.open .sb-chevron{transform:rotate(90deg);}
+.sb-topics{display:none;padding:0 8px 4px 36px;}
+.sb-topics.open{display:block;}
+.sb-topic{
+  padding:7px 10px;border-radius:8px;
+  font-size:11px;font-weight:700;color:var(--mid);
+  cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;gap:6px;
+}
+.sb-topic:hover{background:var(--peach);color:var(--coral);}
+.sb-topic.active{background:linear-gradient(135deg,#FFF0E8,#FFE4D0);color:var(--coral);font-weight:800;}
+.sb-topic-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;opacity:.5;}
+.sb-topic.active .sb-topic-dot{opacity:1;}
+
+/* ── MAIN CONTENT ── */
+.main{flex:1;overflow-y:auto;max-width:100%;}
+
+/* WELCOME STATE */
+.welcome{
+  padding:48px 32px;max-width:600px;margin:0 auto;text-align:center;
+}
+.welcome-em{font-size:52px;margin-bottom:16px;}
+.welcome-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--text);margin-bottom:10px;}
+.welcome-title span{color:var(--coral);}
+.welcome-sub{font-size:13px;color:var(--mid);font-weight:600;line-height:1.7;margin-bottom:28px;}
+
+/* BOOK REFS quick cards */
+.book-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:520px;margin:0 auto 28px;}
+.book-card{
+  background:white;border:1.5px solid var(--border);border-radius:16px;padding:14px;
+  text-align:left;cursor:pointer;transition:all .2s;
+  box-shadow:var(--shadow);
+  text-decoration:none;display:block;
+}
+.book-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.bc-icon{font-size:24px;margin-bottom:8px;}
+.bc-title{font-size:12px;font-weight:800;color:var(--text);margin-bottom:3px;line-height:1.3;}
+.bc-author{font-size:10px;font-weight:600;color:var(--light);}
+.bc-badge{
+  display:inline-flex;margin-top:6px;
+  padding:3px 8px;border-radius:50px;
+  font-size:9px;font-weight:800;
+}
+.bc-badge.free{background:var(--green-l);color:var(--green);}
+.bc-badge.preview{background:var(--gold-l);color:#B07800;}
+
+/* TOPIC VIEW */
+.topic-view{
+  padding:24px 28px;
+  display:none;
+  max-width:780px;
+}
+.topic-view.show{display:block;}
+
+.tv-breadcrumb{
+  font-size:11px;font-weight:700;color:var(--light);
+  margin-bottom:14px;display:flex;align-items:center;gap:6px;
+}
+.tv-breadcrumb span{color:var(--coral);}
+.tv-header{margin-bottom:20px;}
+.tv-subject-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 12px;border-radius:50px;
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;
+  margin-bottom:10px;
+}
+.tv-title{font-family:'Playfair Display',serif;font-size:clamp(20px,4vw,28px);font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.2;}
+.tv-subtitle{font-size:12px;font-weight:600;color:var(--mid);line-height:1.6;}
+
+/* AI NOTES CARD */
+.ai-card{
+  background:white;border:1.5px solid var(--border);border-radius:20px;
+  overflow:hidden;box-shadow:var(--shadow);margin-bottom:16px;
+}
+.ai-header{
+  padding:14px 18px;
+  background:linear-gradient(135deg,var(--purple-l),#F0EBF8);
+  border-bottom:1.5px solid rgba(123,94,167,.15);
+  display:flex;align-items:center;gap:10px;
+}
+.ai-header-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--purple),#9B7FC7);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;box-shadow:0 3px 10px rgba(123,94,167,.3);
+  flex-shrink:0;
+}
+.ai-header-text{flex:1;}
+.ai-header-title{font-size:13px;font-weight:800;color:var(--purple);}
+.ai-header-sub{font-size:10px;font-weight:600;color:rgba(123,94,167,.7);margin-top:1px;}
+.ai-regen{
+  padding:6px 12px;border-radius:50px;
+  background:rgba(123,94,167,.1);border:1px solid rgba(123,94,167,.25);
+  font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;color:var(--purple);
+  cursor:pointer;transition:all .2s;
+}
+.ai-regen:hover{background:rgba(123,94,167,.18);}
+
+.ai-body{padding:18px;}
+
+/* Loading skeleton */
+.ai-loading{display:flex;flex-direction:column;gap:10px;padding:4px 0;}
+.skel{background:linear-gradient(90deg,#F0EBE3 25%,#E8E0D8 50%,#F0EBE3 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* AI Notes rendered content */
+.ai-notes{font-size:13px;line-height:1.75;color:var(--text);}
+.ai-notes h3{font-size:14px;font-weight:800;color:var(--text);margin:14px 0 6px;padding-left:10px;border-left:3px solid var(--coral);}
+.ai-notes h3:first-child{margin-top:0;}
+.ai-notes ul{padding-left:18px;margin-bottom:10px;}
+.ai-notes li{margin-bottom:4px;color:var(--mid);}
+.ai-notes li strong{color:var(--text);}
+.ai-notes .key-box{
+  background:var(--gold-l);border:1.5px solid rgba(242,169,59,.3);
+  border-radius:12px;padding:12px 14px;margin:12px 0;
+}
+.ai-notes .key-box .kb-title{font-size:10px;font-weight:800;color:#8B6200;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
+.ai-notes .key-box ul{margin-bottom:0;}
+.ai-notes .key-box li{color:#6B4800;}
+.ai-notes .clinical-box{
+  background:var(--teal-l);border:1.5px solid rgba(45,155,138,.25);
+  border-radius:12px;padding:12px 14px;margin:12px 0;
+}
+.ai-notes .clinical-box .kb-title{font-size:10px;font-weight:800;color:#1A5C52;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
+.ai-notes .clinical-box li{color:#1A5C52;}
+.ai-notes .exam-box{
+  background:var(--purple-l);border:1.5px solid rgba(123,94,167,.25);
+  border-radius:12px;padding:12px 14px;margin:12px 0;
+}
+.ai-notes .exam-box .kb-title{font-size:10px;font-weight:800;color:#4A2E7A;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
+.ai-notes .exam-box li{color:#4A2E7A;}
+.ai-error{
+  text-align:center;padding:24px;
+  font-size:13px;font-weight:700;color:var(--light);
+}
+
+/* RESOURCES ROW */
+.resources-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+@media(max-width:480px){.resources-row{grid-template-columns:1fr;}}
+
+.res-card{
+  background:white;border:1.5px solid var(--border);border-radius:16px;
+  padding:14px;box-shadow:var(--shadow);
+  text-decoration:none;display:block;
+  transition:all .2s;cursor:pointer;
+}
+.res-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.res-card-header{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.res-badge{
+  width:32px;height:32px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+}
+.res-title{font-size:12px;font-weight:800;color:var(--text);}
+.res-sub{font-size:10px;font-weight:600;color:var(--light);margin-top:1px;}
+.res-desc{font-size:11px;font-weight:600;color:var(--mid);line-height:1.5;margin-bottom:8px;}
+.res-link-row{display:flex;align-items:center;gap:6px;}
+.res-link-badge{
+  font-size:9px;font-weight:800;padding:3px 8px;border-radius:50px;
+}
+.res-link-badge.free{background:var(--green-l);color:var(--green);}
+.res-link-badge.preview{background:var(--gold-l);color:#8B6200;}
+.res-link-badge.paid{background:rgba(44,35,24,.06);color:var(--mid);}
+.res-arrow{margin-left:auto;font-size:12px;color:var(--light);}
+
+/* MOBILE MENU BTN */
+.mob-menu-btn{
+  display:none;
+  position:fixed;bottom:20px;left:20px;z-index:30;
+  width:46px;height:46px;border-radius:50%;
+  background:var(--coral);color:white;font-size:18px;
+  border:none;cursor:pointer;
+  box-shadow:0 6px 20px rgba(255,123,84,.4);
+}
+@media(max-width:680px){.mob-menu-btn{display:flex;align-items:center;justify-content:center;}}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:white;padding:9px 18px;border-radius:12px;font-size:12px;font-weight:700;opacity:0;transition:all .28s cubic-bezier(.34,1.56,.64,1);z-index:400;white-space:nowrap;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <button class="tb-back" onclick="history.back()">←</button>
+  <div class="tb-logo">
+    <div class="tb-icon">📚</div>
+    <div class="tb-name">Physio<span>Library</span></div>
+  </div>
+  <div class="tb-pill">🤖 AI-Powered Notes</div>
+  <div class="tb-search">
+    <span style="font-size:13px;color:var(--light)">🔍</span>
+    <input type="text" placeholder="Search topics…" id="searchInput" oninput="searchTopics(this.value)"/>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div style="padding:14px 16px 8px;">
+      <div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--light);">Your Subjects</div>
+    </div>
+    <div id="sidebarContent"></div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+
+    <!-- WELCOME STATE -->
+    <div class="welcome" id="welcomeState">
+      <div class="welcome-em">📖</div>
+      <div class="welcome-title">Your <span>Smart Library</span></div>
+      <div class="welcome-sub">
+        Select any topic from the sidebar to instantly get AI-generated structured notes —
+        key concepts, clinical relevance, and exam tips — plus links to the best free resources online.
+      </div>
+
+      <div class="book-grid">
+        <a class="book-card" href="https://www.ncbi.nlm.nih.gov/books/NBK430685/" target="_blank">
+          <div class="bc-icon">🏛️</div>
+          <div class="bc-title">StatPearls — NCBI Bookshelf</div>
+          <div class="bc-author">National Library of Medicine</div>
+          <div class="bc-badge free">✓ 100% Free</div>
+        </a>
+        <a class="book-card" href="https://openstax.org/subjects/science" target="_blank">
+          <div class="bc-icon">📗</div>
+          <div class="bc-title">OpenStax — Anatomy & Physiology</div>
+          <div class="bc-author">Rice University</div>
+          <div class="bc-badge free">✓ 100% Free</div>
+        </a>
+        <a class="book-card" href="https://books.google.co.in/books?id=BD+Chaurasia" target="_blank">
+          <div class="bc-icon">🦴</div>
+          <div class="bc-title">BD Chaurasia's Human Anatomy</div>
+          <div class="bc-author">BD Chaurasia · 9th Edition</div>
+          <div class="bc-badge preview">Google Preview</div>
+        </a>
+        <a class="book-card" href="https://archive.org/details/guytonhalltextbo0000hall" target="_blank">
+          <div class="bc-icon">❤️</div>
+          <div class="bc-title">Guyton & Hall Medical Physiology</div>
+          <div class="bc-author">Hall · Internet Archive</div>
+          <div class="bc-badge free">Borrow Free</div>
+        </a>
+        <a class="book-card" href="https://www.khanacademy.org/science/ap-biology" target="_blank">
+          <div class="bc-icon">🎓</div>
+          <div class="bc-title">Khan Academy — Biology & Health</div>
+          <div class="bc-author">Khan Academy</div>
+          <div class="bc-badge free">✓ 100% Free</div>
+        </a>
+        <a class="book-card" href="https://accessphysiotherapy.com" target="_blank">
+          <div class="bc-icon">🩺</div>
+          <div class="bc-title">AccessPhysiotherapy</div>
+          <div class="bc-author">McGraw-Hill — Kisner, Brunnstrom…</div>
+          <div class="bc-badge preview">Institutional Access</div>
+        </a>
+      </div>
+
+      <div style="font-size:11px;font-weight:600;color:var(--light);max-width:420px;margin:0 auto;">
+        💡 <strong>Tip:</strong> Your enrolled subjects appear in the sidebar. Tap any topic to get instant AI notes, free resource links, and exam preparation tips.
+      </div>
+    </div>
+
+    <!-- TOPIC VIEW (shown when topic selected) -->
+    <div class="topic-view" id="topicView">
+      <div class="tv-breadcrumb" id="tvBreadcrumb">
+        📚 Library <span>›</span> <span id="tvBreadSubject">Anatomy</span> <span>›</span> <span id="tvBreadTopic">Osteology</span>
+      </div>
+      <div class="tv-header">
+        <div class="tv-subject-tag" id="tvSubjectTag">🦴 Anatomy</div>
+        <div class="tv-title" id="tvTitle">Osteology</div>
+        <div class="tv-subtitle" id="tvSubtitle">Reference: BD Chaurasia's Human Anatomy · Gold Standard for BPT</div>
+      </div>
+
+      <!-- AI NOTES CARD -->
+      <div class="ai-card">
+        <div class="ai-header">
+          <div class="ai-header-icon">🤖</div>
+          <div class="ai-header-text">
+            <div class="ai-header-title">AI Study Notes</div>
+            <div class="ai-header-sub">Generated from gold-standard physiotherapy curriculum</div>
+          </div>
+          <button class="ai-regen" id="regenBtn" onclick="loadTopic(currentSubject, currentTopic, true)">🔄 Regenerate</button>
+        </div>
+        <div class="ai-body" id="aiBody">
+          <div class="ai-loading">
+            <div class="skel" style="height:16px;width:60%"></div>
+            <div class="skel" style="height:12px;width:90%"></div>
+            <div class="skel" style="height:12px;width:80%"></div>
+            <div class="skel" style="height:12px;width:70%"></div>
+            <div class="skel" style="height:16px;width:50%;margin-top:8px"></div>
+            <div class="skel" style="height:12px;width:88%"></div>
+            <div class="skel" style="height:12px;width:75%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FREE RESOURCE LINKS -->
+      <div class="resources-row" id="resourcesRow"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MOBILE SIDEBAR TOGGLE -->
+<button class="mob-menu-btn" onclick="toggleMobileSidebar()">📚</button>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   SUBJECT → TOPICS → BOOKS DATABASE
+   Each subject maps to:
+   - icon, colour
+   - gold standard book reference
+   - free resource links (StatPearls, OpenStax, etc.)
+   - list of topics (matching student_subjects.html)
+══════════════════════════════════════════════════ */
+const LIBRARY = {
+  anatomy: {
+    name: 'Anatomy', icon: '🦴',
+    color: '#3A7BD5', tagBg: '#E8F0FD', tagColor: '#3A7BD5',
+    goldBook: "BD Chaurasia's Human Anatomy (9th Ed.)",
+    goldBookShort: 'BD Chaurasia',
+    topics: [
+      'Osteology','Arthrology','Myology','Neuroanatomy',
+      'Visceral Anatomy','Surface Anatomy','Embryology','Histology',
+      'Cross-sectional Anatomy','Radiological Anatomy',
+      'Lymphatic System','Cardiovascular Anatomy',
+    ],
+    resources: [
+      { title:"BD Chaurasia's Anatomy", sub:'Google Books Preview', icon:'🦴', badge:'preview', url:'https://books.google.co.in/books?q=BD+Chaurasia+human+anatomy', desc:'The gold standard anatomy text for BPT students in India.' },
+      { title:'StatPearls — Anatomy', sub:'NCBI Bookshelf · Free', icon:'🏛️', badge:'free', url:'https://www.ncbi.nlm.nih.gov/books/NBK430685/', desc:'Free peer-reviewed anatomy articles for every body region.' },
+      { title:'OpenStax Anatomy', sub:'Free full textbook', icon:'📗', badge:'free', url:'https://openstax.org/books/anatomy-and-physiology/pages/1-introduction', desc:'Complete open-access anatomy & physiology textbook.' },
+      { title:'Kenhub Anatomy', sub:'Free basic access', icon:'🔬', badge:'free', url:'https://www.kenhub.com/en/library/anatomy', desc:'Interactive atlas with quizzes for every anatomical structure.' },
+    ]
+  },
+  physiology: {
+    name: 'Physiology', icon: '❤️',
+    color: '#E05C8A', tagBg: '#FDEEF4', tagColor: '#E05C8A',
+    goldBook: "Guyton & Hall Textbook of Medical Physiology (15th Ed.)",
+    goldBookShort: 'Guyton & Hall',
+    topics: [
+      'Muscle Physiology','Nerve Physiology','Cardiovascular Physiology',
+      'Respiratory Physiology','Exercise Physiology','Renal Physiology',
+      'GI Physiology','Endocrine Physiology','Neurophysiology','Sensory Physiology',
+    ],
+    resources: [
+      { title:'Guyton & Hall Physiology', sub:'Internet Archive — Borrow free', icon:'❤️', badge:'free', url:'https://archive.org/details/guytonhalltextbo0000hall', desc:'Borrow Guyton & Hall free for 1 hour on Internet Archive.' },
+      { title:'StatPearls — Physiology', sub:'NCBI Bookshelf · Free', icon:'🏛️', badge:'free', url:'https://www.ncbi.nlm.nih.gov/books/NBK430685/', desc:'Free peer-reviewed physiology chapters for every topic.' },
+      { title:'OpenStax Physiology', sub:'Free full textbook', icon:'📗', badge:'free', url:'https://openstax.org/books/anatomy-and-physiology/pages/1-introduction', desc:'Complete open-access physiology textbook with diagrams.' },
+      { title:'Khan Academy Biology', sub:'Free video lectures', icon:'🎓', badge:'free', url:'https://www.khanacademy.org/science/ap-biology', desc:'Video lectures on every physiology topic — great for revision.' },
+    ]
+  },
+  biochemistry: {
+    name: 'Biochemistry', icon: '🧪',
+    color: '#3A7BD5', tagBg: '#E8F0FD', tagColor: '#3A7BD5',
+    goldBook: "Harper's Illustrated Biochemistry (32nd Ed.)",
+    goldBookShort: "Harper's Biochemistry",
+    topics: [
+      'Cell Biology','Carbohydrate Metabolism','Lipid Metabolism',
+      'Protein & Amino Acid Metabolism','Enzymes & Coenzymes',
+      'Vitamins & Minerals','Acid-Base Balance','Nutrition for Rehab',
+      'Muscle Biochemistry','Oxygen Transport',
+    ],
+    resources: [
+      { title:"Harper's Biochemistry", sub:'Google Books Preview', icon:'🧪', badge:'preview', url:"https://books.google.co.in/books?q=harper's+illustrated+biochemistry", desc:"The gold standard biochemistry text. Preview chapters free." },
+      { title:'StatPearls — Biochemistry', sub:'NCBI Bookshelf · Free', icon:'🏛️', badge:'free', url:'https://www.ncbi.nlm.nih.gov/books/NBK430685/', desc:'Free articles on enzymes, metabolism, vitamins, and more.' },
+      { title:'Lippincott Biochemistry', sub:'Google Books Preview', icon:'📘', badge:'preview', url:'https://books.google.co.in/books?q=lippincott+biochemistry', desc:'Lippincott is popular in BPT for its clinical correlations.' },
+      { title:'Khan Academy Biochemistry', sub:'Free videos', icon:'🎓', badge:'free', url:'https://www.khanacademy.org/science/ap-chemistry-beta', desc:'Clear video explanations of metabolic pathways and enzymes.' },
+    ]
+  },
+  psychology: {
+    name: 'Psychology', icon: '🧠',
+    color: '#7B5EA7', tagBg: '#EDE8F7', tagColor: '#7B5EA7',
+    goldBook: "Kaplan & Sadock's Synopsis of Psychiatry + Biopsychosocial Textbooks",
+    goldBookShort: 'Kaplan & Sadock',
+    topics: [
+      'Biopsychosocial Model','Pain Psychology','Behaviour Change Theories',
+      'Patient Motivation','Health Belief Model','Mental Health & PT',
+      'Grief, Loss & Adjustment','Cognitive Behavioural Approaches',
+      'Stress & Coping','Psychosocial Barriers to Rehab',
+    ],
+    resources: [
+      { title:'StatPearls — Psychology', sub:'NCBI Bookshelf · Free', icon:'🏛️', badge:'free', url:'https://www.ncbi.nlm.nih.gov/books/NBK430685/', desc:'Free evidence-based articles on pain psychology & behaviour.' },
+      { title:'Khan Academy Health & Medicine', sub:'Free', icon:'🎓', badge:'free', url:'https://www.khanacademy.org/science/health-and-medicine', desc:'Psychology and health behaviour videos relevant to PT.' },
+      { title:'NICE Mental Health Guidelines', sub:'Free clinical guidelines', icon:'📋', badge:'free', url:'https://www.nice.org.uk/guidance/conditions-and-diseases/mental-health-and-behavioural-conditions', desc:'Evidence-based clinical guidelines for mental health in practice.' },
+      { title:'PubMed Pain Psychology', sub:'Free research articles', icon:'🔬', badge:'free', url:'https://pubmed.ncbi.nlm.nih.gov/?term=pain+psychology+physiotherapy', desc:'Latest research on psychosocial aspects of pain and rehab.' },
+    ]
+  },
+  sociology: {
+    name: 'Sociology', icon: '👥',
+    color: '#3A7BD5', tagBg: '#E8F0FD', tagColor: '#3A7BD5',
+    goldBook: "Park's Textbook of Preventive & Social Medicine (26th Ed.)",
+    goldBookShort: "Park's PSM",
+    topics: [
+      'Social Determinants of Health','ICF Model of Disability',
+      'Community Rehabilitation','Disability & Society in India',
+      'Healthcare Systems India','Health Equity & Access',
+      'Cultural Competence','Public Health & PT','Social Prescribing',
+    ],
+    resources: [
+      { title:'WHO ICF Framework', sub:'Free download', icon:'🌍', badge:'free', url:'https://www.who.int/standards/classifications/international-classification-of-functioning-disability-and-health', desc:'Official WHO ICF model — free PDF direct from WHO.' },
+      { title:'RPWD Act India 2016', sub:'Free — Government of India', icon:'🇮🇳', badge:'free', url:'https://disabilityaffairs.gov.in/content/page/rpwd-act-2016.php', desc:'Rights of Persons with Disabilities Act 2016 — full text free.' },
+      { title:"Park's PSM Preview", sub:'Google Books', icon:'📗', badge:'preview', url:"https://books.google.co.in/books?q=park's+preventive+social+medicine", desc:"Park's is the standard PSM text used across India for BPT." },
+      { title:'StatPearls — Public Health', sub:'Free NCBI', icon:'🏛️', badge:'free', url:'https://www.ncbi.nlm.nih.gov/books/NBK430685/', desc:'Free articles on community health, social determinants and more.' },
+    ]
+  },
+  'pt-neuro': {
+    name: 'PT in Neurology', icon: '🧬',
+    color: '#7B5EA7', tagBg: '#EDE8F7', tagColor: '#7B5EA7',
+    goldBook: "Umphred's Neurological Rehabilitation (7th Ed.) + Bobath Concept",
+    goldBookShort: "Umphred's Neuro Rehab",
+    topics: [
+      'Neuroplasticity Principles','Stroke Rehabilitation',
+      'Spinal Cord Injury','Traumatic Brain Injury',
+      "Parkinson's Disease","Multiple Sclerosis",
+      'Peripheral Neuropathy','Guillain-Barré Syndrome',
+      'Motor Neuron Disease','Balance & Vestibular Rehab',
+      'Bobath / NDT in Adults','PNF in Neurological PT',
+      'Gait Re-education','Functional Electrical Stimulation',
+    ],
+    resources: [
+      { title:"Umphred's Neurological Rehab", sub:'Google Books Preview', icon:'🧬', badge:'preview', url:"https://books.google.co.in/books?q=umphred+neurological+rehabilitation", desc:"The definitive PT neurology textbook. Preview chapters free." },
+      { title:'StatPearls — Neurology', sub:'NCBI Bookshelf · Free', icon:'🏛️', badge:'free', url:'https://www.ncbi.nlm.nih.gov/books/NBK430685/', desc:'Free articles on stroke, SCI, Parkinson\'s, and all neuro conditions.' },
+      { title:'Stroke Rehab Guidelines', sub:'Free — Stroke Foundation', icon:'🧠', badge:'free', url:'https://informme.org.au/guidelines/living-clinical-guidelines-for-stroke-management', desc:'Evidence-based stroke rehabilitation clinical guidelines.' },
+      { title:'Cochrane Neuro Reviews', sub:'Free abstracts', icon:'📊', badge:'free', url:'https://www.cochranelibrary.com/search?p_o=0&p_p_id=scolarisSearchResults_WAR_scolarissearchresults&q=neurological+physiotherapy', desc:'Systematic review evidence for neurological PT interventions.' },
+    ]
+  },
+  'pt-ortho': {
+    name: 'PT in Orthopaedics', icon: '🦴',
+    color: '#3A7BD5', tagBg: '#E8F0FD', tagColor: '#3A7BD5',
+    goldBook: "Kisner & Colby — Therapeutic Exercise (7th Ed.) + Cyriax",
+    goldBookShort: 'Kisner & Colby',
+    topics: [
+      'Shoulder Conditions','Knee Injuries','Spine Disorders',
+      'Hip Pathologies','Post-THR / TKR Rehab','Foot & Ankle Rehab',
+      'Fracture Management','Tendinopathies','Manual Therapy Techniques',
+      'McKenzie Method','Mulligan Concept','Taping & Bracing',
+      'Gait Analysis','Special Clinical Tests','Return to Sport',
+    ],
+    resources: [
+      { title:'Kisner & Colby Exercise', sub:'Google Books Preview', icon:'🏋️', badge:'preview', url:'https://books.google.co.in/books?q=kisner+colby+therapeutic+exercise', desc:'The gold standard exercise therapy textbook for PT students.' },
+      { title:'StatPearls — Orthopaedics', sub:'NCBI · Free', icon:'🏛️', badge:'free', url:'https://www.ncbi.nlm.nih.gov/books/NBK430685/', desc:'Free orthopaedic condition summaries with PT management.' },
+      { title:'Physiopedia', sub:'Free — physio-specific', icon:'🌐', badge:'free', url:'https://www.physio-pedia.com', desc:'Free physiotherapy encyclopedia — gold standard conditions and tests.' },
+      { title:'Cochrane MSK Reviews', sub:'Free abstracts', icon:'📊', badge:'free', url:'https://www.cochranelibrary.com/search?q=musculoskeletal+physiotherapy', desc:'Best evidence for every orthopaedic PT intervention.' },
+    ]
+  },
+  'pt-cardio': {
+    name: 'PT in Clinical Cardiology', icon: '💓',
+    color: '#E05C8A', tagBg: '#FDEEF4', tagColor: '#E05C8A',
+    goldBook: "Hillegass — Essentials of Cardiopulmonary PT (4th Ed.)",
+    goldBookShort: 'Hillegass Cardiopulmonary PT',
+    topics: [
+      'Cardiac Anatomy Review','ECG Interpretation for PT',
+      'Cardiac Rehab Phase I','Cardiac Rehab Phase II',
+      'Cardiac Rehab Phase III & IV','Exercise Tolerance Testing',
+      'Heart Failure & PT','Post-MI Rehabilitation',
+      'CABG & Valve Surgery Rehab','Risk Stratification',
+      'Cardiac Medications','Hypertension & Exercise',
+    ],
+    resources: [
+      { title:'AHA Cardiac Rehab Guidelines', sub:'Free — American Heart Association', icon:'❤️', badge:'free', url:'https://www.heart.org/en/health-topics/cardiac-rehab', desc:'Official AHA guidelines for cardiac rehabilitation phases 1-4.' },
+      { title:'StatPearls — Cardiology', sub:'NCBI · Free', icon:'🏛️', badge:'free', url:'https://www.ncbi.nlm.nih.gov/books/NBK430685/', desc:'Free evidence-based articles on cardiac conditions and PT management.' },
+      { title:'Physiopedia Cardiac Rehab', sub:'Free', icon:'🌐', badge:'free', url:'https://www.physio-pedia.com/Cardiac_Rehabilitation', desc:'Comprehensive free resource on cardiac rehab for PT students.' },
+      { title:'ECG for PT — Tutorial', sub:'Free — Life in the Fast Lane', icon:'📈', badge:'free', url:'https://litfl.com/ecg-library/', desc:'The best free ECG learning library — fully relevant for PT cardio.' },
+    ]
+  },
+  'pt-resp': {
+    name: 'PT in Respiratory', icon: '🫁',
+    color: '#2D9B8A', tagBg: '#E0F5F1', tagColor: '#2D9B8A',
+    goldBook: "Pryor & Prasad — Physiotherapy for Respiratory & Cardiac Problems",
+    goldBookShort: 'Pryor & Prasad',
+    topics: [
+      'Chest PT Techniques','Airway Clearance','COPD Rehabilitation',
+      'Asthma & Bronchiectasis','Pulmonary Fibrosis',
+      'Post-COVID Rehab','ICU Respiratory PT',
+      'Ventilator Weaning','Breathing Exercises','Incentive Spirometry',
+    ],
+    resources: [
+      { title:'GOLD COPD Guidelines', sub:'Free — goldcopd.org', icon:'🫁', badge:'free', url:'https://goldcopd.org/2024-gold-report/', desc:'Global Initiative for COPD — the gold standard clinical guidelines.' },
+      { title:'StatPearls — Respiratory', sub:'NCBI · Free', icon:'🏛️', badge:'free', url:'https://www.ncbi.nlm.nih.gov/books/NBK430685/', desc:'Free articles on respiratory conditions, physiology, and PT management.' },
+      { title:'Physiopedia Chest PT', sub:'Free', icon:'🌐', badge:'free', url:'https://www.physio-pedia.com/Chest_Physiotherapy', desc:'Comprehensive chest physiotherapy techniques and protocols.' },
+      { title:'ICU Rehab Guidelines', sub:'Free — ESICM', icon:'🏥', badge:'free', url:'https://www.esicm.org/', desc:'Evidence-based guidelines for ICU rehabilitation and early mobilisation.' },
+    ]
+  },
+  biomechanics: {
+    name: 'Biomechanics', icon: '⚙️',
+    color: '#7B5EA7', tagBg: '#EDE8F7', tagColor: '#7B5EA7',
+    goldBook: "Norkin & Levangie — Joint Structure & Function (6th Ed.)",
+    goldBookShort: 'Norkin & Levangie',
+    topics: [
+      'Kinematics & Kinetics','Joint Biomechanics','Gait Analysis',
+      'Posture Assessment','Centre of Gravity','Lever Systems',
+      'Force, Torque & Moment Arm','EMG Basics','Clinical Biomechanics',
+    ],
+    resources: [
+      { title:'Physiopedia Biomechanics', sub:'Free', icon:'🌐', badge:'free', url:'https://www.physio-pedia.com/Biomechanics', desc:'Free biomechanics notes with diagrams for PT students.' },
+      { title:'StatPearls — Biomechanics', sub:'NCBI · Free', icon:'🏛️', badge:'free', url:'https://www.ncbi.nlm.nih.gov/books/NBK430685/', desc:'Free evidence-based biomechanics and gait analysis articles.' },
+      { title:'Khan Academy Physics', sub:'Free — relevant mechanics', icon:'🎓', badge:'free', url:'https://www.khanacademy.org/science/physics', desc:'Forces, levers, and mechanics — directly applicable to biomechanics.' },
+      { title:'OpenStax University Physics', sub:'Free', icon:'📗', badge:'free', url:'https://openstax.org/subjects/science', desc:'Free physics textbook covering all mechanical principles needed.' },
+    ]
+  },
+};
+
+/* ══════════════════════════════════════
+   FALLBACK for subjects not in LIBRARY
+══════════════════════════════════════ */
+function getSubjectData(id) {
+  return LIBRARY[id] || {
+    name: id, icon: '📚',
+    color: '#6B5B4E', tagBg: '#F0E8DF', tagColor: '#6B5B4E',
+    goldBook: 'Standard Physiotherapy Textbooks',
+    goldBookShort: 'Standard References',
+    topics: ['Core Concepts','Assessment','Treatment Principles','Clinical Application','Evidence Base'],
+    resources: [
+      { title:'Physiopedia', sub:'Free physiotherapy encyclopedia', icon:'🌐', badge:'free', url:'https://www.physio-pedia.com', desc:'Free physiotherapy knowledge base — excellent for all subjects.' },
+      { title:'StatPearls NCBI', sub:'Free peer-reviewed', icon:'🏛️', badge:'free', url:'https://www.ncbi.nlm.nih.gov/books/NBK430685/', desc:'Free evidence-based clinical articles from the National Library of Medicine.' },
+      { title:'PubMed Research', sub:'Free abstracts', icon:'🔬', badge:'free', url:'https://pubmed.ncbi.nlm.nih.gov', desc:'Access latest research papers and clinical studies.' },
+      { title:'Cochrane Reviews', sub:'Free abstracts', icon:'📊', badge:'free', url:'https://www.cochranelibrary.com', desc:'Gold standard systematic review evidence for PT interventions.' },
+    ]
+  };
+}
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let enrolledSubjects = [];
+let currentSubject = null;
+let currentTopic = null;
+let notesCache = {};
+let toastT;
+
+/* ── Load enrolled subjects from sessionStorage ── */
+function init() {
+  try {
+    const raw = sessionStorage.getItem('physiolearn_student');
+    if (raw) {
+      const profile = JSON.parse(raw);
+      if (Array.isArray(profile.subjects)) enrolledSubjects = profile.subjects;
+    }
+  } catch(e) {}
+
+  // If no subjects enrolled, show all known subjects
+  if (!enrolledSubjects.length) {
+    enrolledSubjects = Object.values(LIBRARY).map(s => s.name);
+  }
+
+  buildSidebar();
+
+  // Check URL params for direct topic link
+  const params = new URLSearchParams(window.location.search);
+  const subParam   = params.get('subject');
+  const topicParam = params.get('topic');
+  if (subParam && topicParam) {
+    const subId = findSubjectId(subParam);
+    if (subId) loadTopic(subId, decodeURIComponent(topicParam));
+  }
+}
+
+function findSubjectId(name) {
+  // Try direct match or find by name
+  if (LIBRARY[name]) return name;
+  return Object.keys(LIBRARY).find(k =>
+    LIBRARY[k].name.toLowerCase() === name.toLowerCase() ||
+    name.toLowerCase().includes(LIBRARY[k].name.toLowerCase().split(' ')[0].toLowerCase())
+  ) || name.toLowerCase().replace(/\s+/g, '-');
+}
+
+/* ══════════════════════════════════════
+   BUILD SIDEBAR
+══════════════════════════════════════ */
+function buildSidebar() {
+  const container = document.getElementById('sidebarContent');
+  let html = '';
+
+  // Build subject list from enrolled subjects
+  const subjectIds = enrolledSubjects.map(findSubjectId);
+  const seen = new Set();
+
+  subjectIds.forEach(id => {
+    if (seen.has(id)) return; seen.add(id);
+    const s = getSubjectData(id);
+    html += `
+    <div class="sb-subject">
+      <div class="sb-subject-hd" id="sbhd_${id}" onclick="toggleSubject('${id}')">
+        <span class="sb-icon">${s.icon}</span>
+        <span>${s.name}</span>
+        <span class="sb-chevron">›</span>
+      </div>
+      <div class="sb-topics" id="sbt_${id}">
+        ${s.topics.map(t => `
+          <div class="sb-topic" id="sbt_${id}_${t.replace(/\s+/g,'_')}"
+               onclick="loadTopic('${id}','${t.replace(/'/g,"\\'")}')">
+            <span class="sb-topic-dot"></span>${t}
+          </div>`).join('')}
+      </div>
+    </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+function toggleSubject(id) {
+  const hd  = document.getElementById('sbhd_' + id);
+  const top = document.getElementById('sbt_'  + id);
+  const isOpen = top.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.sb-topics').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.sb-subject-hd').forEach(el => el.classList.remove('open'));
+  if (!isOpen) { top.classList.add('open'); hd.classList.add('open'); }
+}
+
+/* ══════════════════════════════════════
+   LOAD TOPIC — calls Claude API for notes
+══════════════════════════════════════ */
+async function loadTopic(subjectId, topicName, forceRefresh = false) {
+  currentSubject = subjectId;
+  currentTopic   = topicName;
+
+  const s = getSubjectData(subjectId);
+
+  // Update UI
+  document.getElementById('welcomeState').style.display = 'none';
+  const tv = document.getElementById('topicView');
+  tv.classList.add('show');
+
+  // Breadcrumb
+  document.getElementById('tvBreadSubject').textContent = s.name;
+  document.getElementById('tvBreadTopic').textContent   = topicName;
+  document.getElementById('tvTitle').textContent        = topicName;
+  document.getElementById('tvSubtitle').textContent     = `📖 Gold Standard Reference: ${s.goldBook}`;
+  const tag = document.getElementById('tvSubjectTag');
+  tag.textContent = s.icon + ' ' + s.name;
+  tag.style.background = s.tagBg;
+  tag.style.color      = s.tagColor;
+
+  // Mark active in sidebar
+  document.querySelectorAll('.sb-topic').forEach(el => el.classList.remove('active'));
+  const activeEl = document.getElementById('sbt_' + subjectId + '_' + topicName.replace(/\s+/g,'_'));
+  if (activeEl) {
+    activeEl.classList.add('active');
+    // Open parent
+    const topicsEl = document.getElementById('sbt_' + subjectId);
+    const hdEl     = document.getElementById('sbhd_' + subjectId);
+    if (topicsEl) topicsEl.classList.add('open');
+    if (hdEl)     hdEl.classList.add('open');
+  }
+
+  // Build resource links
+  buildResources(s);
+
+  // Check cache
+  const cacheKey = subjectId + '__' + topicName;
+  if (!forceRefresh && notesCache[cacheKey]) {
+    renderNotes(notesCache[cacheKey]);
+    return;
+  }
+
+  // Show loading skeleton
+  document.getElementById('aiBody').innerHTML = `
+    <div class="ai-loading">
+      <div class="skel" style="height:16px;width:55%"></div>
+      <div class="skel" style="height:12px;width:90%"></div>
+      <div class="skel" style="height:12px;width:82%"></div>
+      <div class="skel" style="height:12px;width:70%"></div>
+      <div class="skel" style="height:16px;width:48%;margin-top:10px"></div>
+      <div class="skel" style="height:12px;width:88%"></div>
+      <div class="skel" style="height:12px;width:76%"></div>
+      <div class="skel" style="height:16px;width:52%;margin-top:10px"></div>
+      <div class="skel" style="height:12px;width:84%"></div>
+      <div class="skel" style="height:65px;margin-top:10px;border-radius:10px"></div>
+    </div>`;
+
+  document.getElementById('regenBtn').disabled = true;
+
+  // Call Claude API
+  try {
+    const prompt = `You are a physiotherapy educator writing comprehensive study notes for a BPT/MPT student in India studying ${topicName} as part of ${s.name}.
+
+The gold standard reference for this subject is: ${s.goldBook}
+
+Write structured study notes in the following EXACT format using HTML:
+
+<h3>📌 Overview</h3>
+<ul>
+<li><strong>Definition:</strong> [clear definition]</li>
+<li><strong>Importance in PT:</strong> [why this matters for physiotherapy practice]</li>
+<li><strong>Classification:</strong> [if applicable, main types/categories]</li>
+</ul>
+
+<h3>🔑 Key Concepts</h3>
+<ul>
+<li><strong>[Concept 1]:</strong> [explanation]</li>
+<li><strong>[Concept 2]:</strong> [explanation]</li>
+<li><strong>[Concept 3]:</strong> [explanation]</li>
+[4-6 key concepts total]
+</ul>
+
+<div class="key-box">
+<div class="kb-title">⭐ Must-Know Points (Exam Favourites)</div>
+<ul>
+<li>[Important fact 1]</li>
+<li>[Important fact 2]</li>
+<li>[Important fact 3]</li>
+[3-5 must-know exam points]
+</ul>
+</div>
+
+<div class="clinical-box">
+<div class="kb-title">🩺 Clinical Relevance for Physiotherapy</div>
+<ul>
+<li>[How this applies to PT assessment]</li>
+<li>[How this applies to PT treatment]</li>
+<li>[Common clinical scenario involving this topic]</li>
+</ul>
+</div>
+
+<div class="exam-box">
+<div class="kb-title">📝 Exam Preparation Tips</div>
+<ul>
+<li>[Common exam question type for this topic]</li>
+<li>[Common mistake students make]</li>
+<li>[Memory tip / mnemonic if applicable]</li>
+</ul>
+</div>
+
+Keep it concise but comprehensive. Indian BPT syllabus focused. Output ONLY the HTML, no preamble.`;
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await resp.json();
+    const html = data.content?.map(b => b.text || '').join('') || '';
+    const clean = html.replace(/```html|```/g, '').trim();
+
+    notesCache[cacheKey] = clean;
+    renderNotes(clean);
+    showToast('✅ Notes generated from ' + s.goldBookShort);
+
+  } catch(err) {
+    document.getElementById('aiBody').innerHTML = `
+      <div class="ai-error">
+        ⚠️ Could not generate notes right now.<br/>
+        <small>Check your internet connection, then tap Regenerate.</small>
+      </div>`;
+  }
+
+  document.getElementById('regenBtn').disabled = false;
+}
+
+function renderNotes(html) {
+  document.getElementById('aiBody').innerHTML = `<div class="ai-notes">${html}</div>`;
+}
+
+function buildResources(s) {
+  const row = document.getElementById('resourcesRow');
+  row.innerHTML = s.resources.map(r => `
+    <a class="res-card" href="${r.url}" target="_blank" rel="noopener">
+      <div class="res-card-header">
+        <div class="res-badge" style="background:${r.badge==='free'?'var(--green-l)':r.badge==='preview'?'var(--gold-l)':'rgba(44,35,24,.06)'}">
+          ${r.icon}
+        </div>
+        <div>
+          <div class="res-title">${r.title}</div>
+          <div class="res-sub">${r.sub}</div>
+        </div>
+      </div>
+      <div class="res-desc">${r.desc}</div>
+      <div class="res-link-row">
+        <div class="res-link-badge ${r.badge}">${r.badge==='free'?'✓ Free':r.badge==='preview'?'Preview':'Institutional'}</div>
+        <div class="res-arrow">↗</div>
+      </div>
+    </a>`).join('');
+}
+
+/* ══════════════════════════════════════
+   SEARCH
+══════════════════════════════════════ */
+function searchTopics(q) {
+  q = q.toLowerCase().trim();
+  document.querySelectorAll('.sb-topic').forEach(el => {
+    const visible = !q || el.textContent.toLowerCase().includes(q);
+    el.style.display = visible ? '' : 'none';
+    if (visible && q) {
+      // Auto-open parent
+      const parentTopics = el.closest('.sb-topics');
+      const parentHd = parentTopics?.previousElementSibling;
+      if (parentTopics) parentTopics.classList.add('open');
+      if (parentHd) parentHd.classList.add('open');
+    }
+  });
+}
+
+/* ── MOBILE ── */
+function toggleMobileSidebar() {
+  document.getElementById('sidebar').classList.toggle('mobile-open');
+}
+
+/* ── TOAST ── */
+function showToast(msg) {
+  clearTimeout(toastT);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  toastT = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+init();
+</script>
+</body>
+</html>
