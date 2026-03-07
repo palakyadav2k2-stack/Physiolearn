@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PhysioLearn — My Subjects</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --cream:#FDF8F2; --warm:#FFFBF5; --peach:#FFE8D6; --peach2:#FFCBA4;
+  --coral:#FF7B54; --coral-l:#FF9B76;
+  --teal:#2D9B8A;  --teal-l:#E0F5F1;
+  --purple:#7B5EA7;--purple-l:#EDE8F7;
+  --gold:#F2A93B;  --gold-l:#FFF3D6;
+  --green:#52B788; --green-l:#E8F7EF;
+  --blue:#3A7BD5;  --blue-l:#E8F0FD;
+  --rose:#E05C8A;  --rose-l:#FDEEF4;
+  --text:#2C2318;  --mid:#6B5B4E; --light:#A89888;
+  --border:#F0E8DF;
+  --shadow:0 4px 20px rgba(44,35,24,.07);
+  --shadow-lg:0 8px 32px rgba(44,35,24,.11);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+
+/* ── TOP BAR ── */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(253,248,242,.97);backdrop-filter:blur(14px);
+  border-bottom:1.5px solid var(--border);
+  padding:0 18px;height:58px;
+  display:flex;align-items:center;gap:12px;
+}
+.tb-logo{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.tb-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--coral),var(--coral-l));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 3px 10px rgba(255,123,84,.3);}
+.tb-name{font-size:15px;font-weight:900;color:var(--text);}
+.tb-name span{color:var(--coral);}
+.tb-divider{width:1px;height:22px;background:var(--border);}
+.tb-context{flex:1;}
+.tb-title{font-size:13px;font-weight:800;color:var(--text);}
+.tb-sub{font-size:10px;color:var(--light);font-weight:600;margin-top:1px;}
+.tb-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#9B7FC7);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:white;flex-shrink:0;}
+
+/* ── HERO ── */
+.hero{padding:24px 18px 0;max-width:680px;margin:0 auto;}
+.hero-eyebrow{font-size:11px;font-weight:800;color:var(--coral);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(22px,5vw,30px);font-weight:700;color:var(--text);line-height:1.25;margin-bottom:6px;}
+.hero-title em{color:var(--coral);font-style:normal;}
+.hero-sub{font-size:12px;color:var(--mid);font-weight:600;line-height:1.65;margin-bottom:18px;max-width:480px;}
+
+/* STATS STRIP */
+.stats-strip{display:flex;gap:8px;margin-bottom:22px;}
+.stat{flex:1;background:white;border:1.5px solid var(--border);border-radius:14px;padding:11px 10px;text-align:center;box-shadow:var(--shadow);}
+.stat-val{font-size:20px;font-weight:900;color:var(--text);}
+.stat-lbl{font-size:9px;font-weight:800;color:var(--light);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+.stat-bar{width:100%;height:3px;background:var(--peach);border-radius:3px;overflow:hidden;margin-top:6px;}
+.stat-bar-fill{height:100%;background:linear-gradient(90deg,var(--coral),var(--coral-l));border-radius:3px;transition:width .9s ease;}
+
+/* ── FILTER ROW ── */
+.filter-row{
+  max-width:680px;margin:0 auto;
+  padding:0 18px 14px;
+  display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;
+}
+.filter-row::-webkit-scrollbar{display:none;}
+.ftab{
+  flex-shrink:0;padding:7px 15px;border-radius:50px;
+  font-size:11px;font-weight:800;
+  border:1.5px solid var(--border);background:white;color:var(--mid);
+  cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.ftab:hover{border-color:var(--coral);color:var(--coral);}
+.ftab.active{background:var(--coral);border-color:var(--coral);color:white;box-shadow:0 3px 10px rgba(255,123,84,.28);}
+
+/* ── SEARCH ── */
+.search-wrap{max-width:680px;margin:0 auto;padding:0 18px 16px;}
+.search-box{
+  display:flex;align-items:center;gap:9px;
+  background:white;border:1.5px solid var(--border);border-radius:50px;
+  padding:10px 16px;box-shadow:var(--shadow);transition:border-color .2s;
+}
+.search-box:focus-within{border-color:var(--coral);}
+.search-box input{flex:1;border:none;outline:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;color:var(--text);background:transparent;}
+.search-box input::placeholder{color:var(--light);}
+.s-icon{font-size:14px;color:var(--light);}
+.s-clear{font-size:13px;color:var(--light);cursor:pointer;display:none;}
+.s-clear.vis{display:block;}
+
+/* ── SUBJECT GROUPS & CARDS ── */
+.groups-wrap{max-width:680px;margin:0 auto;padding:0 18px 110px;}
+
+.group-hd{
+  display:flex;align-items:center;gap:10px;
+  margin:22px 0 11px;
+}
+.group-hd-label{
+  font-size:10px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--light);white-space:nowrap;
+}
+.group-hd-line{flex:1;height:1px;background:var(--border);}
+.group-hd-count{
+  font-size:9px;font-weight:800;color:white;
+  background:var(--light);border-radius:50px;padding:2px 7px;
+}
+
+.cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(min-width:560px){.cards-grid{grid-template-columns:1fr 1fr 1fr;}}
+
+/* ── SUBJECT CARD ── */
+.scard{
+  background:white;border:1.5px solid var(--border);border-radius:18px;
+  padding:14px 13px;cursor:pointer;
+  transition:all .22s;position:relative;overflow:hidden;
+  box-shadow:var(--shadow);
+}
+/* accent stripe on top */
+.scard::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:18px 18px 0 0;
+  background:var(--accent-color,var(--coral));opacity:0;transition:opacity .22s;
+}
+.scard:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:rgba(255,123,84,.2);}
+.scard:hover::before{opacity:1;}
+.scard.on{border-color:transparent;box-shadow:var(--shadow-lg);}
+.scard.on::before{opacity:1;}
+
+/* colour tinting per group when enrolled */
+.scard.on.c-blue  {background:linear-gradient(145deg,#F2F7FF,#EBF2FE);}
+.scard.on.c-coral {background:linear-gradient(145deg,#FFF6F2,#FFEEE6);}
+.scard.on.c-green {background:linear-gradient(145deg,#F2FFF8,#E6F7EF);}
+.scard.on.c-purple{background:linear-gradient(145deg,#FAF5FF,#F0E9FA);}
+.scard.on.c-gold  {background:linear-gradient(145deg,#FFFBF0,#FFF3D6);}
+.scard.on.c-rose  {background:linear-gradient(145deg,#FFF5F8,#FDEEF4);}
+
+/* hover tint */
+.scard:hover.c-blue  {background:linear-gradient(145deg,#F2F7FF,#EBF2FE);}
+.scard:hover.c-coral {background:linear-gradient(145deg,#FFF6F2,#FFEEE6);}
+.scard:hover.c-green {background:linear-gradient(145deg,#F2FFF8,#E6F7EF);}
+.scard:hover.c-purple{background:linear-gradient(145deg,#FAF5FF,#F0E9FA);}
+.scard:hover.c-gold  {background:linear-gradient(145deg,#FFFBF0,#FFF3D6);}
+.scard:hover.c-rose  {background:linear-gradient(145deg,#FFF5F8,#FDEEF4);}
+
+.scard-tick{
+  position:absolute;top:10px;right:10px;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--green);color:white;
+  display:none;align-items:center;justify-content:center;
+  font-size:10px;font-weight:900;
+  box-shadow:0 2px 6px rgba(82,183,136,.4);
+}
+.scard.on .scard-tick{display:flex;}
+
+.scard-icon{
+  width:42px;height:42px;border-radius:12px;
+  background:var(--cream);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;margin-bottom:9px;
+  box-shadow:0 2px 5px rgba(44,35,24,.07);
+}
+.scard-name{font-size:13px;font-weight:800;color:var(--text);line-height:1.25;margin-bottom:4px;}
+.scard-desc{font-size:10px;font-weight:600;color:var(--mid);line-height:1.45;margin-bottom:8px;}
+.scard-foot{display:flex;align-items:center;gap:6px;}
+.scard-badge{
+  font-size:9px;font-weight:800;
+  padding:2px 7px;border-radius:50px;
+  background:rgba(44,35,24,.06);color:var(--mid);
+}
+.scard-n{font-size:9px;font-weight:700;color:var(--light);margin-left:auto;}
+.scard-prog{
+  width:100%;height:3px;border-radius:3px;
+  background:rgba(44,35,24,.06);margin-top:8px;
+  display:none;overflow:hidden;
+}
+.scard.on .scard-prog{display:block;}
+.scard-prog-fill{height:100%;border-radius:3px;transition:width .8s;}
+
+/* ── BOTTOM BAR ── */
+.btmbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:50;
+  background:rgba(253,248,242,.97);backdrop-filter:blur(14px);
+  border-top:1.5px solid var(--border);
+  padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));
+  display:flex;align-items:center;gap:12px;
+}
+.btm-info{flex:1;}
+.btm-count{font-size:15px;font-weight:900;color:var(--coral);}
+.btm-label{font-size:11px;font-weight:700;color:var(--mid);}
+.btm-hint{font-size:10px;font-weight:600;color:var(--light);margin-top:1px;}
+.btn-go{
+  padding:13px 26px;border-radius:50px;
+  background:linear-gradient(135deg,var(--coral),var(--coral-l));
+  color:white;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;
+  border:none;cursor:pointer;
+  box-shadow:0 6px 20px rgba(255,123,84,.35);
+  transition:all .22s;white-space:nowrap;
+}
+.btn-go:hover{transform:translateY(-2px);}
+.btn-go:disabled{opacity:.45;cursor:default;transform:none;box-shadow:none;}
+
+/* ── DETAIL DRAWER ── */
+.backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.38);
+  z-index:200;opacity:0;pointer-events:none;transition:opacity .28s;
+}
+.backdrop.open{opacity:1;pointer-events:all;}
+.drawer{
+  position:fixed;bottom:0;left:0;right:0;z-index:201;
+  background:var(--cream);border-radius:24px 24px 0 0;
+  transform:translateY(100%);transition:transform .32s cubic-bezier(.32,1,.32,1);
+  max-height:82vh;overflow-y:auto;
+  padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));
+}
+.drawer.open{transform:translateY(0);}
+.d-handle{width:36px;height:4px;border-radius:2px;background:var(--border);margin:14px auto 18px;}
+.d-body{padding:0 20px 24px;}
+.d-icon{font-size:44px;margin-bottom:8px;}
+.d-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.d-desc{font-size:13px;color:var(--mid);font-weight:600;line-height:1.65;margin-bottom:16px;}
+.d-sec{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--light);margin-bottom:9px;}
+.d-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;}
+.d-chip{
+  padding:6px 12px;border-radius:50px;
+  font-size:11px;font-weight:700;
+  background:white;border:1.5px solid var(--border);color:var(--mid);
+}
+.d-meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px;}
+.d-tag{font-size:10px;font-weight:800;padding:4px 11px;border-radius:50px;background:rgba(44,35,24,.06);color:var(--mid);}
+.d-btns{display:flex;gap:9px;}
+.d-enroll{
+  flex:1;padding:14px;border-radius:14px;
+  background:linear-gradient(135deg,var(--coral),var(--coral-l));
+  color:white;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;
+  border:none;cursor:pointer;box-shadow:0 4px 14px rgba(255,123,84,.3);
+  transition:all .2s;
+}
+.d-enroll.enrolled{
+  background:linear-gradient(135deg,var(--green),#6FD4A0);
+  box-shadow:0 4px 14px rgba(82,183,136,.3);
+}
+.d-close{
+  padding:14px 16px;border-radius:14px;
+  background:white;border:1.5px solid var(--border);
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--mid);
+  cursor:pointer;
+}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:86px;left:50%;
+  transform:translateX(-50%) translateY(16px);
+  background:var(--text);color:white;
+  padding:9px 18px;border-radius:12px;
+  font-size:12px;font-weight:700;
+  opacity:0;transition:all .28s cubic-bezier(.34,1.56,.64,1);
+  z-index:400;white-space:nowrap;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:48px 20px;display:none;}
+.empty.show{display:block;}
+.empty-em{font-size:46px;margin-bottom:10px;}
+.empty-t{font-size:15px;font-weight:800;color:var(--mid);margin-bottom:5px;}
+.empty-s{font-size:12px;font-weight:600;color:var(--light);}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="tb-logo">
+    <div class="tb-icon">🦊</div>
+    <div class="tb-name">Physio<span>Learn</span></div>
+  </div>
+  <div class="tb-divider"></div>
+  <div class="tb-context">
+    <div class="tb-title">My Subjects</div>
+    <div class="tb-sub" id="tbSub">BPT · Year 1</div>
+  </div>
+  <div class="tb-avatar" id="tbAvatar">S</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow" id="heroEyebrow">👋 Welcome, Student</div>
+  <div class="hero-title">Pick your <em>subjects</em> for this semester</div>
+  <div class="hero-sub">Tap any subject to see topics, then tap <strong>Enrol</strong> to add it to your dashboard. All your notes, flashcards and AI quizzes will be organised by subject.</div>
+
+  <div class="stats-strip">
+    <div class="stat">
+      <div class="stat-val" id="statEnrolled">0</div>
+      <div class="stat-lbl">Enrolled</div>
+      <div class="stat-bar"><div class="stat-bar-fill" id="statBar" style="width:0%"></div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" id="statTopics">0</div>
+      <div class="stat-lbl">Topics</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" id="statTotal">22</div>
+      <div class="stat-lbl">Available</div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER TABS -->
+<div class="filter-row" id="filterRow">
+  <div class="ftab active" data-filter="all">All</div>
+  <div class="ftab" data-filter="basic">🔬 Basic Sciences</div>
+  <div class="ftab" data-filter="clinical">🏥 Clinical</div>
+  <div class="ftab" data-filter="pt-specialty">🤸 PT Specialties</div>
+  <div class="ftab" data-filter="allied">⚙️ Allied</div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-wrap">
+  <div class="search-box">
+    <span class="s-icon">🔍</span>
+    <input id="searchInput" type="text" placeholder="Search subjects or topics…" oninput="onSearch(this.value)"/>
+    <span class="s-clear" id="sClear" onclick="clearSearch()">✕</span>
+  </div>
+</div>
+
+<!-- GROUPS + CARDS -->
+<div class="groups-wrap" id="groupsWrap"></div>
+<div class="empty" id="emptyState">
+  <div class="empty-em">🔍</div>
+  <div class="empty-t">No subjects found</div>
+  <div class="empty-s">Try a different search term</div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="btmbar">
+  <div class="btm-info">
+    <div class="btm-count" id="btmCount">0 subjects</div>
+    <div class="btm-label">enrolled so far</div>
+    <div class="btm-hint" id="btmHint">Enrol in at least 1 to continue</div>
+  </div>
+  <button class="btn-go" id="btnGo" disabled onclick="goToDashboard()">
+    Go to Dashboard →
+  </button>
+</div>
+
+<!-- DETAIL DRAWER -->
+<div class="backdrop" id="backdrop" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="d-handle"></div>
+  <div class="d-body">
+    <div class="d-icon" id="dIcon">📚</div>
+    <div class="d-name" id="dName"></div>
+    <div class="d-desc" id="dDesc"></div>
+    <div class="d-sec">Topics covered</div>
+    <div class="d-chips" id="dTopics"></div>
+    <div class="d-sec">Details</div>
+    <div class="d-meta" id="dMeta"></div>
+    <div class="d-btns">
+      <button class="d-enroll" id="dEnrollBtn" onclick="toggleEnroll()"></button>
+      <button class="d-close" onclick="closeDrawer()">Close</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   COMPLETE SUBJECT DATABASE — BPT + MPT CURRICULUM
+   Exactly matching the subjects requested by user
+══════════════════════════════════════════════════ */
+const SUBJECTS = [
+
+  /* ──────────────────────────────────────────
+     GROUP 1 — BASIC SCIENCES
+  ────────────────────────────────────────── */
+  {
+    id:'anatomy',
+    group:'basic', groupLabel:'🔬 Basic Sciences',
+    color:'#3A7BD5', cls:'c-blue',
+    icon:'🦴', name:'Anatomy',
+    badge:'Y1–Y2',
+    desc:'Structure of the human body — bones, joints, muscles, nerves, and organs essential to every physiotherapy decision.',
+    topics:['Osteology','Arthrology','Myology','Neuroanatomy','Visceral Anatomy','Surface Anatomy','Embryology','Histology','Cross-sectional Anatomy','Radiological Anatomy','Lymphatic System','Cardiovascular Anatomy'],
+    topicCount:42,
+  },
+  {
+    id:'physiology',
+    group:'basic', groupLabel:'🔬 Basic Sciences',
+    color:'#E05C8A', cls:'c-rose',
+    icon:'❤️', name:'Physiology',
+    badge:'Y1–Y2',
+    desc:'How every body system works — from muscle contraction to cardiac output. The scientific foundation of all rehabilitation.',
+    topics:['Muscle Physiology','Nerve Physiology','Cardiovascular Physiology','Respiratory Physiology','Exercise Physiology','Renal Physiology','GI Physiology','Endocrine Physiology','Neurophysiology','Sensory Physiology'],
+    topicCount:38,
+  },
+  {
+    id:'biochemistry',
+    group:'basic', groupLabel:'🔬 Basic Sciences',
+    color:'#3A7BD5', cls:'c-blue',
+    icon:'🧪', name:'Biochemistry',
+    badge:'Y1',
+    desc:'Molecular biology of the human body — metabolism, enzymes, nutrition, and how biochemical changes affect rehabilitation.',
+    topics:['Cell Biology','Carbohydrate Metabolism','Lipid Metabolism','Protein & Amino Acid Metabolism','Enzymes & Coenzymes','Vitamins & Minerals','Acid-Base Balance','Nutrition for Rehab','Muscle Biochemistry','Oxygen Transport'],
+    topicCount:24,
+  },
+  {
+    id:'psychology',
+    group:'basic', groupLabel:'🔬 Basic Sciences',
+    color:'#7B5EA7', cls:'c-purple',
+    icon:'🧠', name:'Psychology',
+    badge:'Y1–Y2',
+    desc:'Human behaviour, pain psychology, patient motivation, and the biopsychosocial model that underpins modern physiotherapy.',
+    topics:['Biopsychosocial Model','Pain Psychology','Behaviour Change Theories','Patient Motivation','Health Belief Model','Mental Health & PT','Grief, Loss & Adjustment','Cognitive Behavioural Approaches','Stress & Coping','Psychosocial Barriers to Rehab'],
+    topicCount:20,
+  },
+  {
+    id:'sociology',
+    group:'basic', groupLabel:'🔬 Basic Sciences',
+    color:'#3A7BD5', cls:'c-blue',
+    icon:'👥', name:'Sociology',
+    badge:'Y1',
+    desc:'Social determinants of health, models of disability, community health systems, and cultural competence in practice.',
+    topics:['Social Determinants of Health','ICF Model of Disability','Community Rehabilitation','Disability & Society in India','Healthcare Systems India','Health Equity & Access','Cultural Competence','Public Health & PT','Social Prescribing'],
+    topicCount:16,
+  },
+
+  /* ──────────────────────────────────────────
+     GROUP 2 — CLINICAL SCIENCES
+  ────────────────────────────────────────── */
+  {
+    id:'pediatrics',
+    group:'clinical', groupLabel:'🏥 Clinical Sciences',
+    color:'#F2A93B', cls:'c-gold',
+    icon:'👶', name:'Paediatrics',
+    badge:'Y3–Y4',
+    desc:'Child health, developmental milestones, congenital conditions, and the unique considerations of physiotherapy in children.',
+    topics:['Normal Developmental Milestones','Cerebral Palsy — Types & Management','CTEV (Clubfoot)','Brachial Plexus Birth Injury','Paediatric Respiratory Conditions','Down Syndrome','Duchenne Muscular Dystrophy','NDT / Bobath for Children','Paediatric Gait Analysis','Growth & Development Disorders','Autism & PT','Juvenile Idiopathic Arthritis'],
+    topicCount:28,
+  },
+  {
+    id:'gen-surgery',
+    group:'clinical', groupLabel:'🏥 Clinical Sciences',
+    color:'#FF7B54', cls:'c-coral',
+    icon:'🔪', name:'General Surgery',
+    badge:'Y3–Y4',
+    desc:'Surgical procedures, perioperative care principles, common operations, and the physiotherapist\'s role before and after surgery.',
+    topics:['Pre-operative Assessment & PT','Post-operative Respiratory Complications','Types of Anaesthesia','Wound Healing & Surgical Drains','Abdominal Surgery Rehabilitation','Thoracic & Cardiac Surgery','Hepatobiliary Surgery','Vascular Surgery','Orthopaedic Surgeries Overview','Oncological Surgery','ICU Post-Surgery Physiotherapy','Surgical Pharmacology for PT'],
+    topicCount:22,
+  },
+  {
+    id:'gen-medicine',
+    group:'clinical', groupLabel:'🏥 Clinical Sciences',
+    color:'#FF7B54', cls:'c-coral',
+    icon:'🏥', name:'General Medicine',
+    badge:'Y2–Y3',
+    desc:'Medical conditions, pathophysiology, and pharmacology relevant to physiotherapy — diabetes, cardiac, respiratory, rheumatic, and more.',
+    topics:['Diabetes Mellitus & PT','Hypertension & Exercise','Rheumatoid Arthritis','Ankylosing Spondylitis','COPD & Asthma','Osteoporosis','Oncology & PT','Metabolic Syndrome','Inflammatory Conditions','Multimorbidity in Rehab','Common Medications & PT','Imaging & Lab Values for PT'],
+    topicCount:30,
+  },
+
+  /* ──────────────────────────────────────────
+     GROUP 3 — PHYSIOTHERAPY SPECIALTIES
+     (The exact subjects the user asked for)
+  ────────────────────────────────────────── */
+  {
+    id:'pt-cardio',
+    group:'pt-specialty', groupLabel:'🤸 PT Specialties',
+    color:'#E05C8A', cls:'c-rose',
+    icon:'💓', name:'PT in Clinical Cardiology',
+    badge:'Y3–Y4 / MPT',
+    desc:'Cardiac rehabilitation, ECG interpretation, exercise tolerance testing, and PT management for heart failure, post-MI, and CABG patients.',
+    topics:['Cardiac Anatomy & Physiology Review','ECG Interpretation for PT','Cardiac Rehab Phase I (Inpatient)','Cardiac Rehab Phase II (Outpatient)','Cardiac Rehab Phase III & IV','Exercise Tolerance Testing','Heart Failure Management & PT','Post-MI Rehabilitation Protocols','CABG & Valve Surgery Rehab','Arrhythmias & Exercise Safety','Risk Stratification for Exercise','Cardiac Medications — PT Implications','Hypertension & Exercise Prescription','Peripheral Vascular Disease'],
+    topicCount:32,
+  },
+  {
+    id:'pt-gen-surgery',
+    group:'pt-specialty', groupLabel:'🤸 PT Specialties',
+    color:'#52B788', cls:'c-green',
+    icon:'🩺', name:'PT in General Surgery',
+    badge:'Y3–Y4',
+    desc:'Evidence-based pre- and post-surgical physiotherapy, ICU rehabilitation, early mobilisation, and scar management protocols.',
+    topics:['Pre-surgical PT Assessment & Optimisation','Post-op Breathing Exercises & Chest PT','Early Mobilisation Protocols','ICU Rehabilitation','Scar Management','Lymphoedema Post-surgery','Post-Mastectomy PT','Abdominal & Bowel Surgery Rehab','Laparoscopic Surgery Recovery','Thoracic Drainage & PT','Stoma Management Awareness','Post-op Orthostatic Training'],
+    topicCount:26,
+  },
+  {
+    id:'pt-neuro',
+    group:'pt-specialty', groupLabel:'🤸 PT Specialties',
+    color:'#7B5EA7', cls:'c-purple',
+    icon:'🧬', name:'PT in Neurology',
+    badge:'Y3–Y4 / MPT',
+    desc:'Neurological physiotherapy for stroke, SCI, Parkinson\'s, MS, TBI — neuroplasticity, gait re-education, and functional recovery.',
+    topics:['Neuroplasticity Principles','Stroke Rehabilitation','Spinal Cord Injury (Complete & Incomplete)','Traumatic Brain Injury','Parkinson\'s Disease — PT Management',"Huntington's Disease",'Multiple Sclerosis','Peripheral Neuropathy & Guillain-Barré','Motor Neuron Disease','Cerebral Palsy in Adults','Balance & Vestibular Rehab','Bobath / NDT in Adults','PNF in Neurological PT','Gait Re-education Techniques','Functional Electrical Stimulation','Upper Limb Neurological Rehab','Cognitive Rehab & PT','Driving Rehabilitation'],
+    topicCount:38,
+  },
+  {
+    id:'pt-ortho',
+    group:'pt-specialty', groupLabel:'🤸 PT Specialties',
+    color:'#3A7BD5', cls:'c-blue',
+    icon:'🦴', name:'PT in Orthopaedics',
+    badge:'Y2–Y4 / MPT',
+    desc:'Musculoskeletal assessment and treatment — fractures, joint replacements, sports injuries, spine, and post-surgical orthopaedic rehab.',
+    topics:['Shoulder Conditions & Rotator Cuff','Knee Injuries — ACL, Meniscus, Patella','Spine Disorders — Lumbar & Cervical','Hip Pathologies & Post-THR Rehab','Post-TKR Rehabilitation','Foot & Ankle Rehab','Fracture Management & ORIF Rehab','Tendinopathies','Manual Therapy Techniques','McKenzie Method','Mulligan Concept','Taping & Bracing','Gait Analysis & Orthotics','Ergonomics & Workstation Assessment','Return to Sport Protocols','Special Clinical Tests','Amputee Rehab & Prosthetics','Rheumatoid Arthritis & OA Management'],
+    topicCount:44,
+  },
+  {
+    id:'pt-resp',
+    group:'pt-specialty', groupLabel:'🤸 PT Specialties',
+    color:'#2D9B8A', cls:'c-green',
+    icon:'🫁', name:'PT in Respiratory',
+    badge:'Y3–Y4 / MPT',
+    desc:'Chest physiotherapy, pulmonary rehabilitation, COPD, ICU respiratory management, and post-COVID rehabilitation.',
+    topics:['Chest PT Techniques','Airway Clearance Techniques','COPD Rehabilitation','Asthma & Bronchiectasis','Pulmonary Fibrosis','Post-COVID Rehab','ICU Respiratory PT','Ventilator Weaning Protocols','Breathing Exercises','Incentive Spirometry','Postural Drainage','Pursed Lip & Diaphragmatic Breathing'],
+    topicCount:28,
+  },
+  {
+    id:'pt-sports',
+    group:'pt-specialty', groupLabel:'🤸 PT Specialties',
+    color:'#52B788', cls:'c-green',
+    icon:'⚽', name:'Sports Physiotherapy',
+    badge:'Y4 / MPT',
+    desc:'Sports injuries, field-side assessment, prevention programs, taping, dry needling, and return-to-sport testing.',
+    topics:['Sports Injury Assessment & Triage','ACL Injury & Reconstruction Rehab','Concussion Management Protocols','Tendinopathy — Load Management','Muscle Strain & Contusion Rehab','Taping & Bracing Techniques','Dry Needling in Sports','Plyometric Training','Return to Sport Testing','Sports Massage','Load Monitoring','Sideline Emergency Management'],
+    topicCount:30,
+  },
+  {
+    id:'pt-geriatric',
+    group:'pt-specialty', groupLabel:'🤸 PT Specialties',
+    color:'#F2A93B', cls:'c-gold',
+    icon:'👴', name:'Geriatric Physiotherapy',
+    badge:'Y4 / MPT',
+    desc:'Age-related physiological changes, falls prevention, frailty assessment, osteoporosis, and rehabilitation in older adults.',
+    topics:['Physiological Changes of Ageing','Falls Prevention & Assessment','Osteoporosis Management','Frailty & Sarcopenia','Balance Training in Elderly','Dementia & Cognitive Decline in PT','Home Exercise Programs','Assistive Devices & Walking Aids','Community Rehabilitation for Elderly','Polypharmacy Awareness for PT'],
+    topicCount:22,
+  },
+  {
+    id:'pt-women',
+    group:'pt-specialty', groupLabel:'🤸 PT Specialties',
+    color:'#E05C8A', cls:'c-rose',
+    icon:'🤰', name:"Women's Health PT",
+    badge:'Y4 / MPT',
+    desc:'Pelvic floor physiotherapy, antenatal and postnatal care, urinary incontinence, and gynaecological rehabilitation.',
+    topics:['Pelvic Floor Anatomy & Function','Antenatal Exercise & Education','Postnatal Rehabilitation','Pelvic Organ Prolapse','Urinary Incontinence — Types & PT','Diastasis Recti Assessment & Treatment','Post-Mastectomy Rehab','Menopause & Bone Health','Pelvic Pain Management','Endometriosis & PT'],
+    topicCount:20,
+  },
+  {
+    id:'pt-community',
+    group:'pt-specialty', groupLabel:'🤸 PT Specialties',
+    color:'#52B788', cls:'c-green',
+    icon:'🏘️', name:'Community Rehabilitation',
+    badge:'Y4',
+    desc:'CBR models, home-based rehab, disability legislation in India, telerehabilitation, and community integration.',
+    topics:['CBR Models & Principles','Home Environment Assessment','Disability Legislation India (RPWD Act)','Assistive Technology','Vocational Rehabilitation','Self-Management Programs','Telerehabilitation','Health Education in Community','Community PT Entrepreneurship'],
+    topicCount:16,
+  },
+
+  /* ──────────────────────────────────────────
+     GROUP 4 — ALLIED & FOUNDATION
+  ────────────────────────────────────────── */
+  {
+    id:'biomechanics',
+    group:'allied', groupLabel:'⚙️ Allied & Foundation',
+    color:'#7B5EA7', cls:'c-purple',
+    icon:'⚙️', name:'Biomechanics',
+    badge:'Y1–Y2',
+    desc:'Kinematics, kinetics, gait analysis, posture assessment, and the mechanical principles governing human movement.',
+    topics:['Kinematics & Kinetics','Joint Biomechanics','Gait Analysis','Posture Assessment','Centre of Gravity & Balance','Lever Systems in the Body','Force, Torque & Moment Arm','EMG & Motion Capture Basics','Clinical Biomechanics','Biomechanics of Common Injuries'],
+    topicCount:26,
+  },
+  {
+    id:'electrotherapy',
+    group:'allied', groupLabel:'⚙️ Allied & Foundation',
+    color:'#F2A93B', cls:'c-gold',
+    icon:'⚡', name:'Electrotherapy',
+    badge:'Y2–Y3',
+    desc:'All electrophysical agents — TENS, ultrasound, IFT, SWD, laser, NMES — their indications, contraindications, and parameters.',
+    topics:['TENS — Principles & Parameters','Ultrasound Therapy','Interferential Therapy (IFT)','Short Wave Diathermy (SWD)','Laser Therapy (LLLT)','NMES & FES','Traction (Cervical & Lumbar)','Cryotherapy','Thermotherapy','PEMF','Biofeedback in PT','Safety & Contraindications'],
+    topicCount:24,
+  },
+  {
+    id:'exercise-therapy',
+    group:'allied', groupLabel:'⚙️ Allied & Foundation',
+    color:'#52B788', cls:'c-green',
+    icon:'🏋️', name:'Exercise Therapy',
+    badge:'Y2–Y3',
+    desc:'Therapeutic exercise principles, strengthening, stretching, PNF, core stabilisation, hydrotherapy, and exercise prescription.',
+    topics:['Principles of Therapeutic Exercise','Muscle Strengthening Techniques','Stretching — Static, Dynamic, Ballistic','PNF Patterns','Core Stabilisation Programs','Proprioceptive Training','Aerobic Training in PT','Hydrotherapy','Pilates in Physiotherapy','Resistance Training & Periodisation','Exercise Prescription Principles','Post-exercise Recovery'],
+    topicCount:28,
+  },
+  {
+    id:'manual-therapy',
+    group:'allied', groupLabel:'⚙️ Allied & Foundation',
+    color:'#7B5EA7', cls:'c-purple',
+    icon:'🤲', name:'Manual Therapy',
+    badge:'Y3–Y4 / MPT',
+    desc:'Joint mobilisation grades, manipulation, Maitland, Mulligan, and myofascial techniques with clinical reasoning.',
+    topics:['Joint Mobilisation Grades I–IV','Manipulation Techniques','Maitland Approach','Mulligan Concept','Myofascial Release','Soft Tissue Mobilisation','Neural Mobilisation (Butler)','Dry Needling','Instrument-Assisted MT','Clinical Reasoning in Manual Therapy'],
+    topicCount:22,
+  },
+  {
+    id:'foundation',
+    group:'allied', groupLabel:'⚙️ Allied & Foundation',
+    color:'#7B5EA7', cls:'c-purple',
+    icon:'🏥', name:'Foundation of Physiotherapy',
+    badge:'Y1',
+    desc:'History of PT, patient assessment basics, SOAP documentation, professional ethics, infection control, and medico-legal aspects.',
+    topics:['History of Physiotherapy','Principles of Rehabilitation','Subjective & Objective Assessment','SOAP Notes & Documentation','Professional Ethics in PT','Medico-legal Aspects','Clinical Communication','Infection Control & Sterilisation','Universal Precautions','Quality Improvement in PT'],
+    topicCount:16,
+  },
+  {
+    id:'research',
+    group:'allied', groupLabel:'⚙️ Allied & Foundation',
+    color:'#3A7BD5', cls:'c-blue',
+    icon:'📊', name:'Research & Evidence Based PT',
+    badge:'Y4 / MPT',
+    desc:'Study designs, statistics, critical appraisal, PICO, systematic reviews, outcome measures, and writing research papers.',
+    topics:['Research Methodology','Study Designs — RCT, Cohort, Case-Control','Statistics for PT','Critical Appraisal of Literature','PICO Framework','Outcome Measures in PT','Systematic Reviews & Meta-analysis','Writing Research Papers','Ethics in Research','Evidence Levels in PT'],
+    topicCount:18,
+  },
+  {
+    id:'pathology',
+    group:'allied', groupLabel:'⚙️ Allied & Foundation',
+    color:'#3A7BD5', cls:'c-blue',
+    icon:'🔬', name:'Pathology & Microbiology',
+    badge:'Y1–Y2',
+    desc:'Cell injury, inflammation, wound healing, neoplasia, infection control, and common pathological processes relevant to PT.',
+    topics:['Cell Injury & Adaptation','Acute & Chronic Inflammation','Wound Healing','Neoplasia Basics','Haematological Disorders','Microbiology Fundamentals','Infection Control in PT','Sterilisation Methods','Universal Precautions','Immunology Basics'],
+    topicCount:20,
+  },
+];
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let profile = {};
+let enrolled = new Set();
+let activeFilter = 'all';
+let searchQuery = '';
+let drawerSubjectId = null;
+let toastTimer;
+
+/* ── Load profile ── */
+function init() {
+  try {
+    const raw = sessionStorage.getItem('physiolearn_student');
+    if (raw) profile = JSON.parse(raw);
+  } catch(e) {}
+
+  // Pre-tick any subjects from signup step
+  if (Array.isArray(profile.subjects)) {
+    profile.subjects.forEach(saved => {
+      const match = SUBJECTS.find(s =>
+        s.name.toLowerCase().includes(saved.toLowerCase().split(' ')[0]) ||
+        saved.toLowerCase().includes(s.name.toLowerCase().split(' ')[0])
+      );
+      if (match) enrolled.add(match.id);
+    });
+  }
+
+  // Update topbar
+  const name = (profile.name || 'Student').split(' ')[0];
+  const prog = profile.programme || 'BPT';
+  const yr   = profile.year ? ' · Year ' + profile.year : '';
+  document.getElementById('tbAvatar').textContent = name[0].toUpperCase();
+  document.getElementById('tbSub').textContent = prog + yr;
+  document.getElementById('heroEyebrow').textContent = '👋 Welcome, ' + name;
+  document.getElementById('statTotal').textContent = SUBJECTS.length;
+
+  // Filter tabs events
+  document.querySelectorAll('.ftab').forEach(t =>
+    t.addEventListener('click', () => setFilter(t.dataset.filter, t))
+  );
+
+  render();
+}
+
+/* ══════════════════════════════════════
+   RENDER
+══════════════════════════════════════ */
+function getFiltered() {
+  return SUBJECTS.filter(s => {
+    if (activeFilter !== 'all' && s.group !== activeFilter) return false;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      return s.name.toLowerCase().includes(q) ||
+             s.desc.toLowerCase().includes(q) ||
+             s.topics.some(t => t.toLowerCase().includes(q));
+    }
+    return true;
+  });
+}
+
+function render() {
+  const filtered = getFiltered();
+  const wrap = document.getElementById('groupsWrap');
+  const empty = document.getElementById('emptyState');
+
+  if (!filtered.length) { wrap.innerHTML=''; empty.classList.add('show'); updateStats(); return; }
+  empty.classList.remove('show');
+
+  // Group by groupLabel
+  const groups = {};
+  const order = [];
+  filtered.forEach(s => {
+    if (!groups[s.group]) { groups[s.group] = { label:s.groupLabel, items:[] }; order.push(s.group); }
+    groups[s.group].items.push(s);
+  });
+
+  let html = '';
+  order.forEach(g => {
+    const { label, items } = groups[g];
+    // Only show group header when showing multiple groups
+    if (activeFilter === 'all' || filtered.length > items.length) {
+      html += `<div class="group-hd">
+        <span class="group-hd-label">${label}</span>
+        <span class="group-hd-count">${items.length}</span>
+        <div class="group-hd-line"></div>
+      </div>`;
+    }
+    html += `<div class="cards-grid">`;
+    items.forEach(s => {
+      const on = enrolled.has(s.id);
+      const prog = on ? (Math.floor(s.id.charCodeAt(0) * 17 % 45) + 5) : 0; // stable fake progress
+      html += `
+      <div class="scard ${s.cls} ${on?'on':''}" id="sc_${s.id}"
+           style="--accent-color:${s.color}"
+           onclick="openDrawer('${s.id}')">
+        <div class="scard-tick">✓</div>
+        <div class="scard-icon">${s.icon}</div>
+        <div class="scard-name">${s.name}</div>
+        <div class="scard-desc">${s.desc.length>72?s.desc.substring(0,72)+'…':s.desc}</div>
+        <div class="scard-foot">
+          <div class="scard-badge">${s.badge}</div>
+          <div class="scard-n">${s.topicCount} topics</div>
+        </div>
+        <div class="scard-prog">
+          <div class="scard-prog-fill" style="width:${prog}%;background:${s.color}"></div>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  wrap.innerHTML = html;
+  updateStats();
+}
+
+function updateStats() {
+  const count = enrolled.size;
+  const topics = [...enrolled].reduce((a,id) => a + (SUBJECTS.find(s=>s.id===id)?.topicCount||0), 0);
+  const total = SUBJECTS.length;
+  document.getElementById('statEnrolled').textContent = count;
+  document.getElementById('statTopics').textContent   = topics;
+  document.getElementById('statBar').style.width      = Math.min(100,(count/total)*100) + '%';
+  document.getElementById('btmCount').textContent     = count + (count===1?' subject':' subjects');
+  document.getElementById('btmHint').textContent      = count===0 ? 'Enrol in at least 1 to continue' : count + ' subject'+(count===1?'':'s')+' · '+topics+' topics unlocked';
+  document.getElementById('btnGo').disabled           = count===0;
+}
+
+/* ══════════════════════════════════════
+   DRAWER
+══════════════════════════════════════ */
+function openDrawer(id) {
+  const s = SUBJECTS.find(x=>x.id===id); if(!s) return;
+  drawerSubjectId = id;
+  document.getElementById('dIcon').textContent    = s.icon;
+  document.getElementById('dName').textContent    = s.name;
+  document.getElementById('dDesc').textContent    = s.desc;
+  document.getElementById('dTopics').innerHTML    = s.topics.map(t=>`<div class="d-chip">${t}</div>`).join('');
+  document.getElementById('dMeta').innerHTML      = `<div class="d-tag">${s.badge}</div><div class="d-tag">${s.topicCount} Topics</div><div class="d-tag">${s.groupLabel.replace(/^[^\s]+ /,'')}</div>`;
+  refreshDrawerBtn();
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('backdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('backdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function refreshDrawerBtn() {
+  const btn = document.getElementById('dEnrollBtn');
+  const on  = enrolled.has(drawerSubjectId);
+  btn.textContent = on ? '✓ Enrolled — Tap to remove' : '+ Enrol in this Subject';
+  btn.classList.toggle('enrolled', on);
+}
+
+function toggleEnroll() {
+  if (!drawerSubjectId) return;
+  const s = SUBJECTS.find(x=>x.id===drawerSubjectId);
+  if (enrolled.has(drawerSubjectId)) {
+    enrolled.delete(drawerSubjectId);
+    showToast('Removed: ' + s.name);
+  } else {
+    enrolled.add(drawerSubjectId);
+    showToast('✅ Enrolled in ' + s.name + '!');
+  }
+  refreshDrawerBtn();
+  render();
+}
+
+/* ══════════════════════════════════════
+   FILTER + SEARCH
+══════════════════════════════════════ */
+function setFilter(f, el) {
+  activeFilter = f;
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.toggle('active', t===el));
+  render();
+}
+
+function onSearch(q) {
+  searchQuery = q.trim();
+  document.getElementById('sClear').classList.toggle('vis', q.length>0);
+  render();
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  searchQuery = '';
+  document.getElementById('sClear').classList.remove('vis');
+  render();
+}
+
+/* ══════════════════════════════════════
+   GO TO DASHBOARD
+══════════════════════════════════════ */
+function goToDashboard() {
+  if (!enrolled.size) { showToast('⚠️ Enrol in at least one subject first!'); return; }
+  // Save back to profile
+  const names = [...enrolled].map(id => SUBJECTS.find(s=>s.id===id)?.name).filter(Boolean);
+  profile.subjects = names;
+  try { sessionStorage.setItem('physiolearn_student', JSON.stringify(profile)); } catch(e) {}
+  showToast('Opening your dashboard…');
+  setTimeout(() => window.location.href = 'physio_student_hub.html', 800);
+}
+
+/* ── TOAST ── */
+function showToast(msg) {
+  clearTimeout(toastTimer);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+init();
+</script>
+</body>
+</html>
